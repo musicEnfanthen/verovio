@@ -19,6 +19,7 @@
 
 #include "attcomparison.h"
 #include "bboxdevicecontext.h"
+#include "beamspan.h"
 #include "breath.h"
 #include "devicecontext.h"
 #include "dir.h"
@@ -210,8 +211,12 @@ void View::DrawTimeSpanningElement(DeviceContext *dc, Object *element, System *s
             system->SetCurrentFloatingPositioner(
                 (*staffIter)->GetN(), dynamic_cast<ControlElement *>(element), objectX, *staffIter);
 
-        if (element->Is(HAIRPIN)) {
-            // cast to Harprin check in DrawHairpin
+        if (element->Is(BEAMSPAN)) {
+            // cast to BeamSpan check in DrawBeamSpan
+            DrawBeamSpan(dc, dynamic_cast<BeamSpan *>(element), x1, x2, *staffIter, spanningType, graphic);
+        }
+        else if (element->Is(HAIRPIN)) {
+            // cast to Hairpin check in DrawHairpin
             DrawHairpin(dc, dynamic_cast<Hairpin *>(element), x1, x2, *staffIter, spanningType, graphic);
         }
         else if (element->Is(OCTAVE)) {
@@ -235,6 +240,109 @@ void View::DrawTimeSpanningElement(DeviceContext *dc, Object *element, System *s
             DrawTie(dc, dynamic_cast<Tie *>(element), x1, x2, *staffIter, spanningType, graphic);
         }
     }
+}
+    
+void View::DrawBeamSpan(DeviceContext *dc, BeamSpan *beamSpan, int x1, int x2, Staff *staff, char spanningType, Object *graphic)
+{
+    assert(dc);
+    assert(beamSpan);
+    assert(staff);
+    
+    LayerElement *start = NULL;
+    LayerElement *end = NULL;
+    Beam *parentBeam = NULL;
+    Chord *startParentChord = NULL;
+    Chord *endParentChord = NULL;
+    Note *startNote = NULL;
+    Note *endNote = NULL;
+    Chord *startChord = NULL;
+    Chord *endChord = NULL;
+    
+    data_STEMDIRECTION startStemDir = STEMDIRECTION_NONE;
+    data_STEMDIRECTION endStemDir = STEMDIRECTION_NONE;
+    data_STEMDIRECTION stemDir = STEMDIRECTION_NONE;
+    int y1 = staff->GetDrawingY();
+    int y2 = staff->GetDrawingY();
+    
+    /************** parent layers **************/
+    
+    start = dynamic_cast<LayerElement *>(beamSpan->GetStart());
+    end = dynamic_cast<LayerElement *>(beamSpan->GetEnd());
+    
+    if (!start || !end) {
+        // no start and end, obviously nothing to do...
+        return;
+    }
+    
+    if (start->Is(NOTE)) {
+        startNote = dynamic_cast<Note *>(start);
+        assert(startNote);
+        startParentChord = startNote->IsChordTone();
+        startStemDir = startNote->GetDrawingStemDir();
+    }
+    else if (start->Is(CHORD)) {
+        startChord = dynamic_cast<Chord *>(start);
+        assert(startChord);
+        startStemDir = startChord->GetDrawingStemDir();
+    }
+    if (end->Is(NOTE)) {
+        endNote = dynamic_cast<Note *>(end);
+        assert(endNote);
+        endParentChord = endNote->IsChordTone();
+        endStemDir = endNote->GetDrawingStemDir();
+    }
+    else if (end->Is(CHORD)) {
+        endChord = dynamic_cast<Chord *>(end);
+        assert(endChord);
+        endStemDir = endChord->GetDrawingStemDir();
+    }
+    
+    Layer *layer1 = NULL;
+    Layer *layer2 = NULL;
+    
+    // For now, with timestamps, get the first layer. We should eventually look at the @layerident (not implemented)
+    if (start->Is(TIMESTAMP_ATTR))
+        layer1 = dynamic_cast<Layer *>(staff->FindChildByType(LAYER));
+    else
+        layer1 = dynamic_cast<Layer *>(start->GetFirstParent(LAYER));
+    
+    // idem
+    if (end->Is(TIMESTAMP_ATTR))
+        layer2 = dynamic_cast<Layer *>(staff->FindChildByType(LAYER));
+    else
+        layer2 = dynamic_cast<Layer *>(end->GetFirstParent(LAYER));
+    
+    assert(layer1 && layer2);
+    
+    if (layer1->GetN() != layer2->GetN()) {
+        LogWarning("BeamSpans between different layers may not be fully supported.");
+    }
+    
+    /************** note stem dir **************/
+    
+    // the normal case
+    if (spanningType == SPANNING_START_END) {
+        stemDir = startStemDir;
+    }
+    // This is the case when the tie is split over two system of two pages.
+    // In this case, we are now drawing its beginning to the end of the measure (i.e., the last aligner)
+    else if (spanningType == SPANNING_START) {
+        stemDir = startStemDir;
+    }
+    // Now this is the case when the tie is split but we are drawing the end of it
+    else if (spanningType == SPANNING_END) {
+        stemDir = endStemDir;
+    }
+    // Finally, slur accross an entire system; use the staff position and up (see below)
+    else {
+        stemDir = STEMDIRECTION_down;
+    }
+
+    
+   
+    
+    
+ 
 }
 
 void View::DrawHairpin(

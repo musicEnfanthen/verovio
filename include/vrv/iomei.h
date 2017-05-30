@@ -30,6 +30,7 @@ class App;
 class Artic;
 class BarLine;
 class Beam;
+class BeamSpan;
 class BeatRpt;
 class BoundaryEnd;
 class Breath;
@@ -221,6 +222,7 @@ private:
      */
     ///@{
     void WriteMeiAnchoredText(pugi::xml_node currentNode, AnchoredText *anchoredText);
+    void WriteMeiBeamSpan(pugi::xml_node currentNode, BeamSpan *beamSpan);
     void WriteMeiBreath(pugi::xml_node currentNode, Breath *breath);
     void WriteMeiDir(pugi::xml_node currentNode, Dir *dir);
     void WriteMeiDynam(pugi::xml_node currentNode, Dynam *dynam);
@@ -452,6 +454,7 @@ private:
      */
     ///@{
     bool ReadMeiAnchoredText(Object *parent, pugi::xml_node anchoredText);
+    bool ReadMeiBeamSpan(Object *parent, pugi::xml_node beamSpan);
     bool ReadMeiBreath(Object *parent, pugi::xml_node breath);
     bool ReadMeiDir(Object *parent, pugi::xml_node dir);
     bool ReadMeiDynam(Object *parent, pugi::xml_node dynam);

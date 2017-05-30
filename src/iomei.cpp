@@ -19,6 +19,7 @@
 #include "anchoredtext.h"
 #include "artic.h"
 #include "beam.h"
+#include "beamspan.h"
 #include "boundary.h"
 #include "breath.h"
 #include "chord.h"
@@ -241,6 +242,10 @@ bool MeiOutput::WriteObject(Object *object)
     else if (object->Is(ANCHORED_TEXT)) {
         m_currentNode = m_currentNode.append_child("anchoredText");
         WriteMeiAnchoredText(m_currentNode, dynamic_cast<AnchoredText *>(object));
+    }
+    else if (object->Is(BEAMSPAN)) {
+        m_currentNode = m_currentNode.append_child("beamSpan");
+        WriteMeiBeamSpan(m_currentNode, dynamic_cast<BeamSpan *>(object));
     }
     else if (object->Is(BREATH)) {
         m_currentNode = m_currentNode.append_child("breath");
@@ -790,6 +795,16 @@ void MeiOutput::WriteMeiAnchoredText(pugi::xml_node currentNode, AnchoredText *a
     WriteControlElement(currentNode, anchoredText);
     WriteTextDirInterface(currentNode, anchoredText);
 }
+    
+void MeiOutput::WriteMeiBeamSpan(pugi::xml_node currentNode, BeamSpan *beamSpan)
+{
+    assert(beamSpan);
+    
+    WriteControlElement(currentNode, beamSpan);
+    WriteTimeSpanningInterface(currentNode, beamSpan);
+    beamSpan->WriteColor(currentNode);
+    beamSpan->WritePlacement(currentNode);
+};
 
 void MeiOutput::WriteMeiBreath(pugi::xml_node currentNode, Breath *breath)
 {
@@ -2364,6 +2379,9 @@ bool MeiInput::ReadMeiMeasureChildren(Object *parent, pugi::xml_node parentNode)
         else if (std::string(current.name()) == "anchoredText") {
             success = ReadMeiAnchoredText(parent, current);
         }
+        else if (std::string(current.name()) == "beamSpan") {
+            success = ReadMeiBeamSpan(parent, current);
+        }
         else if (std::string(current.name()) == "breath") {
             success = ReadMeiBreath(parent, current);
         }
@@ -2441,6 +2459,19 @@ bool MeiInput::ReadMeiAnchoredText(Object *parent, pugi::xml_node anchoredText)
     return ReadMeiTextChildren(vrvAnchoredText, anchoredText, vrvAnchoredText);
 }
 
+bool MeiInput::ReadMeiBeamSpan(Object *parent, pugi::xml_node beamSpan)
+{
+    BeamSpan *vrvBeamSpan = new BeamSpan();
+    ReadControlElement(beamSpan, vrvBeamSpan);
+    
+    ReadTimeSpanningInterface(beamSpan, vrvBeamSpan);
+    vrvBeamSpan->ReadColor(beamSpan);
+    vrvBeamSpan->ReadPlacement(beamSpan);
+    
+    parent->AddChild(vrvBeamSpan);
+    return true;
+}
+    
 bool MeiInput::ReadMeiBreath(Object *parent, pugi::xml_node breath)
 {
     Breath *vrvBreath = new Breath();
