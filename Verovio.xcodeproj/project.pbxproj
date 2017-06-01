@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		152886C51C9CA86100B515BB /* ligature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 152886C41C9CA86100B515BB /* ligature.cpp */; };
 		1579B3431B15033100B16F5C /* proport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579B3421B15033100B16F5C /* proport.cpp */; };
-		1EB930711EDD85F9007E5B34 /* beamspan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1EB930701EDD85F9007E5B34 /* beamspan.cpp */; };
 		2D2A799A1A69812C000A441B /* chord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D2A79991A69812C000A441B /* chord.cpp */; };
 		4067E4C81DDDAF0000C6E059 /* fermata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4067E4C71DDDAF0000C6E059 /* fermata.cpp */; };
 		40910FEC1E42734C00DB1FA5 /* mordent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40910FEA1E42734C00DB1FA5 /* mordent.cpp */; };
@@ -401,6 +400,7 @@
 		8F7DD0551EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
 		8F7DD0561EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
 		8F7DD0571EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
+		930590061EE0130A0027CF44 /* beamspan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 930590051EE0130A0027CF44 /* beamspan.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -429,8 +429,6 @@
 		152886C41C9CA86100B515BB /* ligature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ligature.cpp; path = src/ligature.cpp; sourceTree = "<group>"; };
 		1579B3411B15031D00B16F5C /* proport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = proport.h; path = include/vrv/proport.h; sourceTree = "<group>"; };
 		1579B3421B15033100B16F5C /* proport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = proport.cpp; path = src/proport.cpp; sourceTree = "<group>"; };
-		1EB9306F1EDD8010007E5B34 /* beamspan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = beamspan.h; sourceTree = "<group>"; };
-		1EB930701EDD85F9007E5B34 /* beamspan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = beamspan.cpp; sourceTree = "<group>"; };
 		2D2A79991A69812C000A441B /* chord.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chord.cpp; path = src/chord.cpp; sourceTree = "<group>"; };
 		2D2A799B1A698137000A441B /* chord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chord.h; path = include/vrv/chord.h; sourceTree = "<group>"; };
 		4067E4C71DDDAF0000C6E059 /* fermata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fermata.cpp; path = src/fermata.cpp; sourceTree = "<group>"; };
@@ -702,6 +700,8 @@
 		8F59293218854BF800FE51AD /* vrv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vrv.h; path = include/vrv/vrv.h; sourceTree = "<group>"; };
 		8F59293318854BF800FE51AD /* vrvdef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vrvdef.h; path = include/vrv/vrvdef.h; sourceTree = "<group>"; };
 		8F7DD0531EAF3682001B072A /* fb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fb.cpp; path = src/fb.cpp; sourceTree = "<group>"; };
+		930590041EE012C90027CF44 /* beamspan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = include/vrv/beamspan.h; sourceTree = "<group>"; };
+		930590051EE0130A0027CF44 /* beamspan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = src/beamspan.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -918,8 +918,8 @@
 				4DF28A021A754DE400BA9F7D /* controlelement.h */,
 				4DB351101C8040B1002DD057 /* anchoredtext.cpp */,
 				4DB3510D1C80409E002DD057 /* anchoredtext.h */,
-				1EB930701EDD85F9007E5B34 /* beamspan.cpp */,
-				1EB9306F1EDD8010007E5B34 /* beamspan.h */,
+				930590051EE0130A0027CF44 /* beamspan.cpp */,
+				930590041EE012C90027CF44 /* beamspan.h */,
 				4D4335BC1ECCA366003BE1A9 /* breath.cpp */,
 				4D4335BB1ECCA359003BE1A9 /* breath.h */,
 				4DB351111C8040B1002DD057 /* dir.cpp */,
@@ -1480,7 +1480,7 @@
 				8F086EE4188539540037FD8E /* barline.cpp in Sources */,
 				8F086EE5188539540037FD8E /* bboxdevicecontext.cpp in Sources */,
 				8F086EE6188539540037FD8E /* beam.cpp in Sources */,
-				1EB930711EDD85F9007E5B34 /* beamspan.cpp in Sources */,
+				930590061EE0130A0027CF44 /* beamspan.cpp in Sources */,
 				4DAA46681DA2B3E600FF1E1A /* artic.cpp in Sources */,
 				8F086EE7188539540037FD8E /* clef.cpp in Sources */,
 				8F086EE8188539540037FD8E /* devicecontext.cpp in Sources */,

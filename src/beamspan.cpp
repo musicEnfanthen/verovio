@@ -31,54 +31,54 @@
 #include "vrv.h"
 
 namespace vrv {
-
-//----------------------------------------------------------------------------
-// BeamSpan
-//----------------------------------------------------------------------------
-
-BeamSpan::BeamSpan() : ControlElement("beamspan-"), ObjectListInterface(),TimeSpanningInterface(), AttColor(), AttPlacement()
-{
-    RegisterInterface(TimeSpanningInterface::GetAttClasses(), TimeSpanningInterface::IsInterface());
-    RegisterAttClass(ATT_COLOR);
-    RegisterAttClass(ATT_PLACEMENT);
     
-    Reset();
-}
-
-BeamSpan::~BeamSpan()
-{
-    ClearCoords();
-}
-
-void BeamSpan::Reset(){
-    ControlElement::Reset();
-    TimeSpanningInterface::Reset();
-    ResetColor();
-    ResetPlacement();
+    //----------------------------------------------------------------------------
+    // BeamSpan
+    //----------------------------------------------------------------------------
     
-    ClearCoords();
-}
-    
-void BeamSpan::ClearCoords()
-{
-    ArrayOfBeamElementCoords::iterator iter;
-    for (iter = m_beamElementCoords.begin(); iter != m_beamElementCoords.end(); ++iter) {
-        delete *iter;
-    }
-    m_beamElementCoords.clear();
-}
-    
-//----------------------------------------------------------------------------
-// BeamSpanElementCoord
-//----------------------------------------------------------------------------
-
-/**
-    BeamSpanElementCoord::~BeamSpanElementCoord()
+    BeamSpan::BeamSpan() : ControlElement("beamspan-"), ObjectListInterface(),TimeSpanningInterface(), AttColor(), AttPlacement()
     {
-        if (m_element) m_element->m_beamElementCoord = NULL;
+        RegisterInterface(TimeSpanningInterface::GetAttClasses(), TimeSpanningInterface::IsInterface());
+        RegisterAttClass(ATT_COLOR);
+        RegisterAttClass(ATT_PLACEMENT);
+        
+        Reset();
     }
-**/
-
+    
+    BeamSpan::~BeamSpan()
+    {
+        ClearCoords();
+    }
+    
+    void BeamSpan::Reset(){
+        ControlElement::Reset();
+        TimeSpanningInterface::Reset();
+        ResetColor();
+        ResetPlacement();
+        
+        ClearCoords();
+    }
+    
+    void BeamSpan::ClearCoords()
+    {
+        ArrayOfBeamElementCoords::iterator iter;
+        for (iter = m_beamElementCoords.begin(); iter != m_beamElementCoords.end(); ++iter) {
+            delete *iter;
+        }
+        m_beamElementCoords.clear();
+    }
+    
+    //----------------------------------------------------------------------------
+    // BeamSpanElementCoord
+    //----------------------------------------------------------------------------
+    
+    /**
+     BeamSpanElementCoord::~BeamSpanElementCoord()
+     {
+     if (m_element) m_element->m_beamElementCoord = NULL;
+     }
+     **/
+    
     
     
 } // namespace vrv

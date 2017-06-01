@@ -147,6 +147,10 @@ void View::DrawTimeSpanningElement(DeviceContext *dc, Object *element, System *s
     // Get the parent system of the first and last note
     System *parentSystem1 = dynamic_cast<System *>(interface->GetStart()->GetFirstParent(SYSTEM));
     System *parentSystem2 = dynamic_cast<System *>(interface->GetEnd()->GetFirstParent(SYSTEM));
+    
+    // TODO: rm
+    LogDebug("parentSystem1, parentSystem2", parentSystem1, parentSystem2);
+
 
     int x1, x2;
     Object *objectX = NULL;
