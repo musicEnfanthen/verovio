@@ -14,21 +14,10 @@
 
 //----------------------------------------------------------------------------
 
+#include "beam.h"
 #include "chord.h"
-#include "doc.h"
-#include "editorial.h"
-#include "elementpart.h"
-#include "functorparams.h"
-#include "layer.h"
-#include "layerelement.h"
-#include "note.h"
-#include "rest.h"
-#include "smufl.h"
-#include "space.h"
-#include "staff.h"
-#include "tuplet.h"
 #include "verticalaligner.h"
-#include "vrv.h"
+#include "layerelement.h"
 
 namespace vrv {
     
@@ -36,11 +25,12 @@ namespace vrv {
     // BeamSpan
     //----------------------------------------------------------------------------
     
-    BeamSpan::BeamSpan() : ControlElement("beamspan-"), ObjectListInterface(),TimeSpanningInterface(), AttColor(), AttPlacement()
+    BeamSpan::BeamSpan() : ControlElement("beamspan-"), ObjectListInterface(),TimeSpanningInterface(), AttColor(), AttPlacement(), AttPlist()
     {
         RegisterInterface(TimeSpanningInterface::GetAttClasses(), TimeSpanningInterface::IsInterface());
         RegisterAttClass(ATT_COLOR);
         RegisterAttClass(ATT_PLACEMENT);
+        RegisterAttClass(ATT_PLIST);
         
         Reset();
     }
@@ -50,9 +40,11 @@ namespace vrv {
         ClearCoords();
     }
     
-    void BeamSpan::Reset(){
+    void BeamSpan::Reset()
+    {
         ControlElement::Reset();
         TimeSpanningInterface::Reset();
+        ResetPlist();
         ResetColor();
         ResetPlacement();
         

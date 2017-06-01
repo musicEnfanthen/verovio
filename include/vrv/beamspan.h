@@ -9,6 +9,7 @@
 #define __VRV_BEAMSPAN_H__
 
 #include "atts_cmn.h"
+#include "atts_shared.h"
 #include "controlelement.h"
 #include "drawinginterface.h"
 #include "timeinterface.h"
@@ -69,7 +70,8 @@ namespace vrv {
     public DrawingListInterface,
     public TimeSpanningInterface,
     public AttColor,
-    public AttPlacement {
+    public AttPlacement,
+    public AttPlist {
     public:
         /**
          * @name Constructors, destructors, and other standard methods

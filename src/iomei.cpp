@@ -2465,6 +2465,7 @@ bool MeiInput::ReadMeiBeamSpan(Object *parent, pugi::xml_node beamSpan)
     ReadControlElement(beamSpan, vrvBeamSpan);
     
     ReadTimeSpanningInterface(beamSpan, vrvBeamSpan);
+    vrvBeamSpan->ReadPlist(beamSpan);
     vrvBeamSpan->ReadColor(beamSpan);
     vrvBeamSpan->ReadPlacement(beamSpan);
     
