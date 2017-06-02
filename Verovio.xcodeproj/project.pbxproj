@@ -400,7 +400,7 @@
 		8F7DD0551EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
 		8F7DD0561EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
 		8F7DD0571EAF3682001B072A /* fb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F7DD0531EAF3682001B072A /* fb.cpp */; };
-		930590061EE0130A0027CF44 /* beamspan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 930590051EE0130A0027CF44 /* beamspan.cpp */; };
+		930590061EE0130A0027CF44 /* src/beamspan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 930590051EE0130A0027CF44 /* src/beamspan.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -700,8 +700,8 @@
 		8F59293218854BF800FE51AD /* vrv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vrv.h; path = include/vrv/vrv.h; sourceTree = "<group>"; };
 		8F59293318854BF800FE51AD /* vrvdef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vrvdef.h; path = include/vrv/vrvdef.h; sourceTree = "<group>"; };
 		8F7DD0531EAF3682001B072A /* fb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fb.cpp; path = src/fb.cpp; sourceTree = "<group>"; };
-		930590041EE012C90027CF44 /* beamspan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = include/vrv/beamspan.h; sourceTree = "<group>"; };
-		930590051EE0130A0027CF44 /* beamspan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = src/beamspan.cpp; sourceTree = "<group>"; };
+		930590041EE012C90027CF44 /* include/vrv/beamspan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = include/vrv/beamspan.h; sourceTree = "<group>"; };
+		930590051EE0130A0027CF44 /* src/beamspan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = src/beamspan.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -918,8 +918,8 @@
 				4DF28A021A754DE400BA9F7D /* controlelement.h */,
 				4DB351101C8040B1002DD057 /* anchoredtext.cpp */,
 				4DB3510D1C80409E002DD057 /* anchoredtext.h */,
-				930590051EE0130A0027CF44 /* beamspan.cpp */,
-				930590041EE012C90027CF44 /* beamspan.h */,
+				930590051EE0130A0027CF44 /* src/beamspan.cpp */,
+				930590041EE012C90027CF44 /* include/vrv/beamspan.h */,
 				4D4335BC1ECCA366003BE1A9 /* breath.cpp */,
 				4D4335BB1ECCA359003BE1A9 /* breath.h */,
 				4DB351111C8040B1002DD057 /* dir.cpp */,
@@ -1480,7 +1480,7 @@
 				8F086EE4188539540037FD8E /* barline.cpp in Sources */,
 				8F086EE5188539540037FD8E /* bboxdevicecontext.cpp in Sources */,
 				8F086EE6188539540037FD8E /* beam.cpp in Sources */,
-				930590061EE0130A0027CF44 /* beamspan.cpp in Sources */,
+				930590061EE0130A0027CF44 /* src/beamspan.cpp in Sources */,
 				4DAA46681DA2B3E600FF1E1A /* artic.cpp in Sources */,
 				8F086EE7188539540037FD8E /* clef.cpp in Sources */,
 				8F086EE8188539540037FD8E /* devicecontext.cpp in Sources */,

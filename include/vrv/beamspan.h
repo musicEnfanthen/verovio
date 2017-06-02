@@ -93,6 +93,12 @@ namespace vrv {
         virtual TimeSpanningInterface *GetTimeSpanningInterface() { return dynamic_cast<TimeSpanningInterface *>(this); }
         ///@}
         
+        /**
+         * Add an element (a note or a rest) to a beam.
+         * Only Note or Rest elements will be actually added to the beam.
+         */
+        virtual void AddChild(Object *object);
+        
         /** TODO: No child note
          * Return information about the position in the beam.
          * (no const since the cached list is updated)
@@ -105,7 +111,7 @@ namespace vrv {
         /**
          *
          */
-        const ArrayOfBeamElementCoords *GetElementCoords() const { return &m_beamElementCoords; }
+        const ArrayOfBeamElementCoords *GetElementCoords() const { return &m_beamSpanElementCoords; }
         
         //----------//
         // Functors //
@@ -122,7 +128,7 @@ namespace vrv {
          * For example, keep only notes in Beam
          * This also initializes the m_beamElementCoords vector
          */
-        // virtual void FilterList(ListOfObjects *childList);
+        virtual void FilterList(ListOfObjects *childList);
         
         /**
          * Initializes the m_beamElementCoords vector objects.
@@ -145,13 +151,13 @@ namespace vrv {
         //
     public:
         /** */
-        // BeamSpanDrawingParams m_drawingParams;
+        BeamSpanDrawingParams m_drawingParams;
         
     private:
         /**
          * An array of coordinates for each element
          **/
-        mutable ArrayOfBeamElementCoords m_beamElementCoords;
+        mutable ArrayOfBeamElementCoords m_beamSpanElementCoords;
     };
     
     //----------------------------------------------------------------------------
@@ -175,7 +181,7 @@ namespace vrv {
         int m_dur; // drawing duration
         int m_breaksec;
         char m_partialFlags[MAX_DURATION_PARTIALS];
-        ControlElement *m_element;
+        LayerElement *m_element;
     };
     
 } // namespace vrv

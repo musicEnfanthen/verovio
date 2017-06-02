@@ -254,7 +254,6 @@ void View::DrawBeamSpan(DeviceContext *dc, BeamSpan *beamSpan, int x1, int x2, S
     
     LayerElement *start = NULL;
     LayerElement *end = NULL;
-    Beam *parentBeam = NULL;
     Chord *startParentChord = NULL;
     Chord *endParentChord = NULL;
     Note *startNote = NULL;
@@ -265,13 +264,29 @@ void View::DrawBeamSpan(DeviceContext *dc, BeamSpan *beamSpan, int x1, int x2, S
     data_STEMDIRECTION startStemDir = STEMDIRECTION_NONE;
     data_STEMDIRECTION endStemDir = STEMDIRECTION_NONE;
     data_STEMDIRECTION stemDir = STEMDIRECTION_NONE;
-    int y1 = staff->GetDrawingY();
-    int y2 = staff->GetDrawingY();
+    
+    /******************************************************************/
+    // initialization
+    
+    ListOfObjects *beamSpanChildren = beamSpan->GetList(beamSpan);
+    LogDebug("DrawBeamSpan: beamSpanChildren", beamSpanChildren);
+    
+    // Should we assert this at the beginning?
+    if (beamSpanChildren->empty()) {
+        return;
+    }
+    const ArrayOfBeamElementCoords *beamSpanElementCoords = beamSpan->GetElementCoords();
+    LogDebug("DrawBeamSpan: beamSpanElementCoords", beamSpanElementCoords);
+    
+    int elementCount = (int)beamSpanChildren->size();
+    int last = elementCount - 1;
+    
     
     /************** parent layers **************/
-    
     start = dynamic_cast<LayerElement *>(beamSpan->GetStart());
     end = dynamic_cast<LayerElement *>(beamSpan->GetEnd());
+    LogDebug("DrawBeamSpan: start, end", start, end);
+    
     
     if (!start || !end) {
         // no start and end, obviously nothing to do...
@@ -321,6 +336,20 @@ void View::DrawBeamSpan(DeviceContext *dc, BeamSpan *beamSpan, int x1, int x2, S
     if (layer1->GetN() != layer2->GetN()) {
         LogWarning("BeamSpans between different layers may not be fully supported.");
     }
+
+    
+    /******************************************************************/
+    // Calculate the beam slope and position
+    
+    beamSpan->m_drawingParams.CalcBeamSpan(layer1, staff, m_doc, beamSpanElementCoords, elementCount);
+    
+    /******************************************************************/
+    // Start the Beam graphic and draw the children
+    
+    if (graphic)
+        dc->ResumeGraphic(graphic, graphic->GetUuid());
+    else
+        dc->StartGraphic(beamSpan, "spanning-beamspan", "");
     
     /************** note stem dir **************/
     
@@ -345,7 +374,11 @@ void View::DrawBeamSpan(DeviceContext *dc, BeamSpan *beamSpan, int x1, int x2, S
     
    
     
-    
+    if (graphic)
+        dc->EndResumedGraphic(graphic, this);
+    else
+        dc->EndGraphic(beamSpan, this);
+
  
 }
 

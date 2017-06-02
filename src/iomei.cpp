@@ -802,6 +802,7 @@ void MeiOutput::WriteMeiBeamSpan(pugi::xml_node currentNode, BeamSpan *beamSpan)
     
     WriteControlElement(currentNode, beamSpan);
     WriteTimeSpanningInterface(currentNode, beamSpan);
+    beamSpan->WritePlist(currentNode);
     beamSpan->WriteColor(currentNode);
     beamSpan->WritePlacement(currentNode);
 };
