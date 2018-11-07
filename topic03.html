@@ -22,9 +22,12 @@ $(".measure .staff ~ .staff " ).attr("fill", "#00e").attr("stroke", "#00e");
 $(".measure .staff ~ .staff ~ .staff " ).attr("fill", "#000").attr("stroke", "#000");
 {% endhighlight %}
 
-<p>In the fourth staff this will color only the staffDef glyphs, i.e. clefs, keys and meter signatures at the beginning of each line.</p>
+<p>In the third staff this will color only the staffDef glyphs, i.e. clefs, keys and meter signatures at the beginning of each line.</p>
 {% highlight javascript %}
-$(".measure .staff:nth-child(4) .staffDef" ).attr("fill", "#0c0").attr("stroke", "#0c0");
+// apply attributes to staffs that are siblings of second staff
+$(".measure .staff ~ .staff ~ .staff .clef, .measure .staff ~ .staff ~ .staff .keySig, .measure .staff ~ .staff ~ .staff .meterSig" ).attr("fill", "#0c0").attr("stroke", "#0c0");
+// remove attributes from staffs that are siblings to third staff
+$(".measure .staff ~ .staff ~ .staff ~ .staff .clef, .measure .staff ~ .staff ~ .staff ~ .staff .keySig, .measure .staff ~ .staff ~ .staff ~ .staff .meterSig" ).attr("fill", "#000").attr("stroke", "#000");
 {% endhighlight %}
 
 <p>Finally in the fourth staff this greys out all measures following the fourth.</p>
