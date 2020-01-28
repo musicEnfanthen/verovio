@@ -183,6 +183,16 @@ public:
     std::string GetElementAttr(const std::string &xmlId);
 
     /**
+     * Returns the ID string of the notated (the original) element
+     */
+    std::string GetNotatedIdForElement(const std::string &xmlId);
+
+    /**
+     * Returns a vector of ID strings of all elements (the notated and the expanded) for a given element
+     */
+    std::string GetExpansionIdsForElement(const std::string &xmlId);
+
+    /**
      * Redo the layout of the loaded data.
      * This can be called once the rendering option were changed,
      * For example with a new page (sceen) height or a new zoom level.
@@ -226,7 +236,7 @@ public:
 
     /**
      * @name Get the input file format (defined as FileFormat)
-     * The SetFormat with FileFormat does not perform any validation
+     * The SetInputFrom with FileFormat does not perform any validation
      */
     ///@{
     bool SetInputFrom(std::string const &inputFrom);
@@ -236,7 +246,7 @@ public:
 
     /**
      * @name Get the output file format (defined as FileFormat)
-     * The SetOutputFormat with FileFormat does not perform any validation
+     * The SetOutputTo with FileFormat does not perform any validation
      */
     ///@{
     bool SetOutputTo(std::string const &outputTo);
@@ -260,7 +270,6 @@ public:
 
     /**
      * @name Get the pages for a loaded file
-     * The SetFormat with FileFormat does not perform any validation
      */
     ///@{
     int GetPageCount();
