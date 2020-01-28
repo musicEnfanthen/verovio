@@ -52,6 +52,7 @@
 #include "system.h"
 #include "text.h"
 #include "timestamp.h"
+#include "transposition.h"
 #include "verse.h"
 #include "vrv.h"
 
@@ -173,7 +174,7 @@ bool Doc::GenerateFooter()
     if (m_scoreDef.FindDescendantByType(PGFOOT) || m_options->m_adjustPageHeight.GetValue()) {
         return false;
     }
-    
+
     PgFoot *pgFoot = new PgFoot();
     // We mark it as generated for not having it written in the output
     pgFoot->IsGenerated(true);
@@ -760,12 +761,8 @@ void Doc::SetCurrentScoreDefDoc(bool force)
     m_currentScoreDefDone = true;
 }
 
-void Doc::OptimizeScoreDefDoc(bool encoded)
+void Doc::OptimizeScoreDefDoc()
 {
-    if (encoded) {
-        return;
-    }
-
     Functor optimizeScoreDef(&Object::OptimizeScoreDef);
     Functor optimizeScoreDefEnd(&Object::OptimizeScoreDefEnd);
     OptimizeScoreDefParams optimizeScoreDefParams(this, &optimizeScoreDef, &optimizeScoreDefEnd);
@@ -816,7 +813,7 @@ void Doc::CastOffDoc()
     // Reset the scoreDef at the beginning of each system
     this->SetCurrentScoreDefDoc(true);
     if (optimize) {
-        this->OptimizeScoreDefDoc(false);
+        this->OptimizeScoreDefDoc();
     }
 
     // Here we redo the alignment because of the new scoreDefs
@@ -839,7 +836,7 @@ void Doc::CastOffDoc()
 
     this->SetCurrentScoreDefDoc(true);
     if (optimize) {
-        this->OptimizeScoreDefDoc(false);
+        this->OptimizeScoreDefDoc();
     }
 }
 
@@ -939,6 +936,10 @@ void Doc::CastOffEncodingDoc()
     // because idx will still be 0 but contentPage is dead!
     this->ResetDrawingPage();
     this->SetCurrentScoreDefDoc(true);
+
+    if (this->m_options->m_condenseEncoded.GetValue()) {
+        this->OptimizeScoreDefDoc();
+    }
 }
 
 void Doc::ConvertToPageBasedDoc()
@@ -1152,6 +1153,67 @@ void Doc::ConvertAnalyticalMarkupDoc(bool permanent)
             }
         }
     }
+}
+
+void Doc::TransposeDoc()
+{
+    Transposer transposer;
+    transposer.SetBase600(); // Set extended chromatic alteration mode (allowing more than double sharps/flats)
+    std::string transpositionOption = this->m_options->m_transpose.GetValue();
+    if (transposer.IsValidIntervalName(transpositionOption)) {
+        transposer.SetTransposition(transpositionOption);
+    }
+    else if (transposer.IsValidKeyTonic(transpositionOption)) {
+
+        // Find the starting key tonic of the data to use in calculating the tranposition interval:
+        // Set transposition by key tonic.
+        // Detect the current key from the keysignature.
+        KeySig *keysig = dynamic_cast<KeySig *>(this->m_scoreDef.FindDescendantByType(KEYSIG, 3));
+        // If there is no keysignature, assume it is C.
+        TransPitch currentKey = TransPitch(0, 0, 0);
+        if (keysig && keysig->HasPname()) {
+            currentKey = TransPitch(keysig->GetPname(), ACCIDENTAL_GESTURAL_NONE, keysig->GetAccid(), 0);
+        }
+        else if (keysig) {
+            // No tonic pitch in key signature, so infer from key signature.
+            int fifthsInt = keysig->GetFifthsInt();
+            // Check the keySig@mode is present (currently assuming major):
+            currentKey = transposer.CircleOfFifthsToMajorTonic(fifthsInt);
+            // need to add a dummy "0" key signature in score (staffDefs of staffDef).
+        }
+        transposer.SetTransposition(currentKey, transpositionOption);
+    }
+
+    else if (transposer.IsValidSemitones(transpositionOption)) {
+        KeySig *keysig = dynamic_cast<KeySig *>(this->m_scoreDef.FindDescendantByType(KEYSIG, 3));
+        int fifths = 0;
+        if (keysig) {
+            fifths = keysig->GetFifthsInt();
+        }
+        else {
+            LogWarning("No key signature in data, assuming no key signature with no sharps/flats.");
+            // need to add a dummy "0" key signature in score (staffDefs of staffDef).
+        }
+        transposer.SetTransposition(fifths, transpositionOption);
+    }
+    else {
+        LogWarning("Transposition option argument is invalid: %s", transpositionOption.c_str());
+        // there is no transposition that can be done so do not try
+        // to transpose any further (if continuing in this function,
+        // there will not be an error, just that the transposition
+        // will be at the unison, so no notes should change.
+        return;
+    }
+
+    Functor transpose(&Object::Transpose);
+    TransposeParams transposeParams(this, &transposer);
+
+    if (this->m_options->m_transposeSelectedOnly.GetValue() == false) {
+        transpose.m_visibleOnly = false;
+    }
+
+    m_scoreDef.Process(&transpose, &transposeParams);
+    this->Process(&transpose, &transposeParams);
 }
 
 bool Doc::HasPage(int pageIdx)
@@ -1453,11 +1515,6 @@ double Doc::GetTopMargin(const ClassId classId) const
 {
     if (classId == HARM) return m_options->m_topMarginHarm.GetValue();
     return m_options->m_defaultTopMargin.GetValue();
-}
-
-double Doc::GetLeftPosition() const
-{
-    return m_options->m_leftPosition.GetValue();
 }
 
 Page *Doc::SetDrawingPage(int pageIdx)

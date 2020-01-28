@@ -224,7 +224,7 @@ public:
     /**
      * Optimize the scoreDef once the document is cast-off.
      */
-    void OptimizeScoreDefDoc(bool encoded = false);
+    void OptimizeScoreDefDoc();
 
     /**
      * Prepare the document for drawing.
@@ -291,6 +291,11 @@ public:
      * Permanent conversion discard analytical markup and elements will be preserved in the MEI output.
      */
     void ConvertAnalyticalMarkupDoc(bool permanent = false);
+
+    /**
+     * Transpose the content of the doc.
+     */
+    void TransposeDoc();
 
     /**
      * To be implemented.

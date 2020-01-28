@@ -421,7 +421,7 @@ void View::DrawBracketSpan(
             dc->ResetBrush();
         }
         else if (bracketSpan->GetLform() == LINEFORM_dotted) {
-            dc->SetPen(m_currentColour, lineWidth, AxSOLID, lineWidth);
+            dc->SetPen(m_currentColour, lineWidth, AxDOT, lineWidth, 1);
             dc->SetBrush(m_currentColour, AxSOLID);
             // Adjust the start and end because the horizontal line of the was drawn in that case
             int x1Dotted
@@ -429,8 +429,8 @@ void View::DrawBracketSpan(
             int x2Dotted
                 = ((spanningType == SPANNING_START_END) || (spanningType == SPANNING_END)) ? x2 - bracketSize : x2;
             int yDotted = y + lineWidth / 2;
-            dc->DrawLine(ToDeviceContextX(x1Dotted), ToDeviceContextY(yDotted), ToDeviceContextX(x2Dotted),
-                ToDeviceContextY(yDotted));
+            dc->DrawLine(ToDeviceContextX(x1Dotted + 1.5 * lineWidth), ToDeviceContextY(yDotted),
+                ToDeviceContextX(x2Dotted), ToDeviceContextY(yDotted));
             dc->ResetPen();
             dc->ResetBrush();
         }
@@ -886,11 +886,18 @@ void View::DrawTie(DeviceContext *dc, Tie *tie, int x1, int x2, Staff *staff, ch
     assert(curve);
     curve->UpdateCurveParams(bezier, 0.0, thickness, drawingCurveDir);
 
+    int penStyle = AxSOLID;
+    switch (tie->GetLform()) {
+        case LINEFORM_dashed: penStyle = AxSHORT_DASH; break;
+        case LINEFORM_dotted: penStyle = AxDOT; break;
+        default: break;
+    }
+
     if (graphic)
         dc->ResumeGraphic(graphic, graphic->GetUuid());
     else
         dc->StartGraphic(tie, "spanning-tie", "");
-    DrawThickBezierCurve(dc, bezier, thickness, staff->m_drawingStaffSize);
+    DrawThickBezierCurve(dc, bezier, thickness, staff->m_drawingStaffSize, 0, penStyle);
     if (graphic)
         dc->EndResumedGraphic(graphic, this);
     else
@@ -1188,9 +1195,9 @@ void View::DrawSylConnectorLines(DeviceContext *dc, int x1, int x2, int y, Syl *
         // no dash if the distance is smaller than a dash length
         if (dist < dashLength) {
             LogDebug("Hyphen space under the limit");
+            nbDashes = 0;
         }
-
-        if (nbDashes < 2) {
+        else if (nbDashes < 2) {
             nbDashes = 1;
         }
         else {

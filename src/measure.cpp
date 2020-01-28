@@ -44,8 +44,15 @@ namespace vrv {
 //----------------------------------------------------------------------------
 
 Measure::Measure(bool measureMusic, int logMeasureNb)
-    : Object("measure-"), AttMeasureLog(), AttMeterConformanceBar(), AttNNumberLike(), AttPointing(), AttTyped()
+    : Object("measure-")
+    , AttBarring()
+    , AttMeasureLog()
+    , AttMeterConformanceBar()
+    , AttNNumberLike()
+    , AttPointing()
+    , AttTyped()
 {
+    RegisterAttClass(ATT_BARRING);
     RegisterAttClass(ATT_MEASURELOG);
     RegisterAttClass(ATT_METERCONFORMANCEBAR);
     RegisterAttClass(ATT_NNUMBERLIKE);
@@ -363,6 +370,23 @@ std::vector<Staff *> Measure::GetFirstStaffGrpStaves(ScoreDef *scoreDef)
     return staves;
 }
 
+Staff *Measure::GetTopVisibleStaff()
+{
+    Staff *staff = NULL;
+    ArrayOfObjects staves;
+    ClassIdComparison matchType(STAFF);
+    this->FindAllDescendantByComparison(&staves, &matchType, 1);
+    for (auto &child : staves) {
+        staff = dynamic_cast<Staff *>(child);
+        assert(staff);
+        if (staff->DrawingIsVisible()) {
+            break;
+        }
+        staff = NULL;
+    }
+    return staff;
+}
+
 int Measure::EnclosesTime(int time) const
 {
     int repeat = 1;
@@ -570,6 +594,10 @@ int Measure::OptimizeScoreDef(FunctorParams *functorParams)
 {
     OptimizeScoreDefParams *params = dynamic_cast<OptimizeScoreDefParams *>(functorParams);
     assert(params);
+
+    if (!params->m_doc->GetOptions()->m_condenseTempoPages.GetValue()) {
+        return FUNCTOR_CONTINUE;
+    }
 
     params->m_hasFermata = (this->FindDescendantByType(FERMATA));
     params->m_hasTempo = (this->FindDescendantByType(TEMPO));

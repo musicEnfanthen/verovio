@@ -71,6 +71,8 @@ enum option_HEADER { HEADER_none = 0, HEADER_auto, HEADER_encoded };
 
 enum option_MEASURENUMBER { MEASURENUMBER_system = 0, MEASURENUMBER_interval };
 
+enum option_SYSTEMDIVIDER { SYSTEMDIVIDER_none = 0, SYSTEMDIVIDER_left, SYSTEMDIVIDER_left_right };
+
 //----------------------------------------------------------------------------
 // Option
 //----------------------------------------------------------------------------
@@ -107,6 +109,7 @@ public:
     static std::map<int, std::string> s_footer;
     static std::map<int, std::string> s_header;
     static std::map<int, std::string> s_measureNumber;
+    static std::map<int, std::string> s_systemDivider;
 
 protected:
     std::string m_title;
@@ -460,6 +463,9 @@ public:
 
     OptionBool m_adjustPageHeight;
     OptionIntMap m_breaks;
+    OptionBool m_condenseEncoded;
+    OptionBool m_condenseFirstPage;
+    OptionBool m_condenseTempoPages;
     OptionBool m_evenNoteSpacing;
     OptionBool m_humType;
     OptionBool m_justifyIncludeLastPage;
@@ -474,6 +480,7 @@ public:
     OptionIntMap m_header;
     OptionBool m_noJustification;
     OptionBool m_openControlEvents;
+    OptionBool m_outputSmuflXmlEntities;
     OptionInt m_pageHeight;
     OptionInt m_pageMarginBottom;
     OptionInt m_pageMarginLeft;
@@ -500,7 +507,6 @@ public:
     OptionBool m_graceRhythmAlign;
     OptionBool m_graceRightAlign;
     OptionDbl m_hairpinSize;
-    OptionDbl m_leftPosition;
     OptionDbl m_lyricHyphenLength;
     OptionDbl m_lyricHyphenWidth;
     OptionBool m_lyricNoStartHyphen;
@@ -523,6 +529,7 @@ public:
     OptionInt m_spacingSystem;
     OptionDbl m_staffLineWidth;
     OptionDbl m_stemWidth;
+    OptionIntMap m_systemDivider;
     OptionDbl m_tieThickness;
 
     /**
@@ -534,6 +541,8 @@ public:
     OptionArray m_choiceXPathQuery;
     OptionString m_mdivXPathQuery;
     OptionArray m_substXPathQuery;
+    OptionString m_transpose;
+    OptionBool m_transposeSelectedOnly;
 
     /**
      * Element margins

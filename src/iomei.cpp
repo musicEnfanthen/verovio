@@ -152,14 +152,14 @@ bool MeiOutput::ExportFile()
             // schema processing instruction
             decl = meiDoc.append_child(pugi::node_declaration);
             decl.set_name("xml-model");
-            decl.append_attribute("href") = "http://music-encoding.org/schema/4.0.0/mei-all.rng";
+            decl.append_attribute("href") = "https://music-encoding.org/schema/4.0.0/mei-all.rng";
             decl.append_attribute("type") = "application/xml";
             decl.append_attribute("schematypens") = "http://relaxng.org/ns/structure/1.0";
 
             // schematron processing instruction
             decl = meiDoc.append_child(pugi::node_declaration);
             decl.set_name("xml-model");
-            decl.append_attribute("href") = "http://music-encoding.org/schema/4.0.0/mei-all.rng";
+            decl.append_attribute("href") = "https://music-encoding.org/schema/4.0.0/mei-all.rng";
             decl.append_attribute("type") = "application/xml";
             decl.append_attribute("schematypens") = "http://purl.oclc.org/dsdl/schematron";
 
@@ -202,13 +202,17 @@ bool MeiOutput::ExportFile()
 
             page->Save(this);
         }
+
+        unsigned int output_flags = pugi::format_default;
+        if (m_doc->GetOptions()->m_outputSmuflXmlEntities.GetValue()) {
+            output_flags |= pugi::format_no_escapes;
+        }
+
         if (m_writeToStreamString) {
-            // meiDoc.save(m_streamStringOutput, "    ", pugi::format_default | pugi::format_no_escapes);
-            meiDoc.save(m_streamStringOutput, "    ");
+            meiDoc.save(m_streamStringOutput, "    ", output_flags);
         }
         else {
-            // meiDoc.save_file(m_filename.c_str(), "    ", pugi::format_default | pugi::format_no_escapes);
-            meiDoc.save_file(m_filename.c_str(), "    ");
+            meiDoc.save_file(m_filename.c_str(), "    ", output_flags);
         }
     }
     catch (char *str) {
@@ -1070,6 +1074,7 @@ void MeiOutput::WriteMeasure(pugi::xml_node currentNode, Measure *measure)
     assert(measure);
 
     WriteXmlId(currentNode, measure);
+    measure->WriteBarring(currentNode);
     measure->WriteMeasureLog(currentNode);
     measure->WriteMeterConformanceBar(currentNode);
     measure->WriteNNumberLike(currentNode);
@@ -1254,6 +1259,7 @@ void MeiOutput::WriteSlur(pugi::xml_node currentNode, Slur *slur)
     WriteTimeSpanningInterface(currentNode, slur);
     slur->WriteColor(currentNode);
     slur->WriteCurvature(currentNode);
+    slur->WriteCurveRend(currentNode);
 }
 
 void MeiOutput::WriteStaff(pugi::xml_node currentNode, Staff *staff)
@@ -1292,6 +1298,7 @@ void MeiOutput::WriteTie(pugi::xml_node currentNode, Tie *tie)
     WriteTimeSpanningInterface(currentNode, tie);
     tie->WriteColor(currentNode);
     tie->WriteCurvature(currentNode);
+    tie->WriteCurveRend(currentNode);
 }
 
 void MeiOutput::WriteTrill(pugi::xml_node currentNode, Trill *trill)
@@ -1596,7 +1603,7 @@ void MeiOutput::WriteMeterSig(pugi::xml_node currentNode, MeterSig *meterSig)
         meterSigDefaultLog.SetMeterUnit(meterSig->GetUnit());
         meterSigDefaultLog.WriteMeterSigDefaultLog(currentNode);
         AttMeterSigDefaultVis meterSigDefaultVis;
-        meterSigDefaultVis.SetMeterForm(meterSig->meterSigVisToMeterSigDefaultVis(meterSig->GetForm()));
+        meterSigDefaultVis.SetMeterForm(meterSig->GetForm());
         meterSigDefaultVis.WriteMeterSigDefaultVis(currentNode);
         return;
     }
@@ -1874,8 +1881,12 @@ void MeiOutput::WriteText(pugi::xml_node element, Text *text)
 {
     if (!text->GetText().empty()) {
         pugi::xml_node nodechild = element.append_child(pugi::node_pcdata);
-        // nodechild.text() =  UTF16to8(EscapeSMuFL(text->GetText()).c_str()).c_str();
-        nodechild.text() = UTF16to8(text->GetText()).c_str();
+        if (m_doc->GetOptions()->m_outputSmuflXmlEntities.GetValue()) {
+            nodechild.text() = UTF16to8(EscapeSMuFL(text->GetText()).c_str()).c_str();
+        }
+        else {
+            nodechild.text() = UTF16to8(text->GetText()).c_str();
+        }
     }
 }
 
@@ -2631,7 +2642,9 @@ bool MeiInput::ReadDoc(pugi::xml_node root)
         m_doc->m_header.append_copy(current);
         if (root.attribute("meiversion")) {
             std::string version = std::string(root.attribute("meiversion").value());
-            if (version == "4.0.0")
+            if (version == "4.0.1")
+                m_version = MEI_4_0_1;
+            else if (version == "4.0.0")
                 m_version = MEI_4_0_0;
             else if (version == "3.0.0")
                 m_version = MEI_3_0_0;
@@ -3322,8 +3335,7 @@ bool MeiInput::ReadScoreDefElement(pugi::xml_node element, ScoreDefElement *obje
         vrvMeterSig->SetCount(meterSigDefaultLog.GetMeterCount());
         vrvMeterSig->SetSym(meterSigDefaultLog.GetMeterSym());
         vrvMeterSig->SetUnit(meterSigDefaultLog.GetMeterUnit());
-        //
-        vrvMeterSig->SetForm(vrvMeterSig->meterSigDefaultVisToMeterSigVis(meterSigDefaultVis.GetMeterForm()));
+        vrvMeterSig->SetForm(meterSigDefaultVis.GetMeterForm());
         object->AddChild(vrvMeterSig);
     }
 
@@ -3674,6 +3686,7 @@ bool MeiInput::ReadMeasure(Object *parent, pugi::xml_node measure)
     }
     SetMeiUuid(measure, vrvMeasure);
 
+    vrvMeasure->ReadBarring(measure);
     vrvMeasure->ReadMeasureLog(measure);
     vrvMeasure->ReadMeterConformanceBar(measure);
     vrvMeasure->ReadNNumberLike(measure);
@@ -3995,6 +4008,7 @@ bool MeiInput::ReadSlur(Object *parent, pugi::xml_node slur)
     ReadTimeSpanningInterface(slur, vrvSlur);
     vrvSlur->ReadColor(slur);
     vrvSlur->ReadCurvature(slur);
+    vrvSlur->ReadCurveRend(slur);
 
     parent->AddChild(vrvSlur);
     ReadUnsupportedAttr(slur, vrvSlur);
@@ -4025,6 +4039,7 @@ bool MeiInput::ReadTie(Object *parent, pugi::xml_node tie)
     ReadTimeSpanningInterface(tie, vrvTie);
     vrvTie->ReadColor(tie);
     vrvTie->ReadCurvature(tie);
+    vrvTie->ReadCurveRend(tie);
 
     parent->AddChild(vrvTie);
     ReadUnsupportedAttr(tie, vrvTie);
@@ -5814,10 +5829,10 @@ void MeiInput::UpgradeMordentTo_4_0_0(pugi::xml_node mordent, Mordent *vrvMorden
 {
     if (mordent.attribute("form")) {
         std::string form = std::string(mordent.attribute("form").value());
-        if (form == "inv") {
+        if (form == "norm") {
             vrvMordent->SetForm(mordentLog_FORM_lower);
         }
-        else if (form == "norm") {
+        else if (form == "inv") {
             vrvMordent->SetForm(mordentLog_FORM_upper);
         }
         else {
@@ -5854,7 +5869,7 @@ void MeiInput::UpgradeScoreDefElementTo_4_0_0(pugi::xml_node scoreDefElement, Sc
     if (scoreDefElement.attribute("meter.rend")) {
         if (meterSig) {
             meterSig->SetForm(
-                meterSig->AttMeterSigVis::StrToMeterSigVisForm(scoreDefElement.attribute("meter.rend").value()));
+                meterSig->AttMeterSigVis::StrToMeterform(scoreDefElement.attribute("meter.rend").value()));
             scoreDefElement.remove_attribute("meter.rend");
         }
     }

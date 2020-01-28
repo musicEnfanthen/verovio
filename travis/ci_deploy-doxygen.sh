@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 # This script builds the doxygen documentation and automatically commits
+<<<<<<< HEAD
 # It uses an encrypted GH_TOKEN setting in Travis to check out the latest version, 
+=======
+# It uses an encrypted GH_TOKEN setting in Travis to check out the latest version,
+>>>>>>> 26891742c0188b55a674d96671491b6334dea9c5
 # build the doc, commit the changes, and then push.
 
 set -ev # -e: Exit with nonzero exit code if anything fails
@@ -12,6 +16,14 @@ if [ "${TRAVIS_BRANCH}" != "${BUILD_BRANCH}" ]; then
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+    echo "Will not build doxygen documentation for pull requests. Skipping it."
+    exit 0
+fi
+
+>>>>>>> 26891742c0188b55a674d96671491b6334dea9c5
 SHA=$(git rev-parse --verify HEAD)
 
 DOXYGEN_REPOSITORY="https://${GH_TOKEN}@github.com/rism-ch/verovio-doxygen"
@@ -31,7 +43,11 @@ cd ./doc
 # Return to the root
 cd ..
 
+<<<<<<< HEAD
 # 
+=======
+#
+>>>>>>> 26891742c0188b55a674d96671491b6334dea9c5
 cd ${DOXYGEN_DIRECTORY}
 
 echo "Configuring git push"
@@ -52,4 +68,8 @@ git pull
 
 echo "Pushing commits"
 # Now that we're all set up, we can push.
+<<<<<<< HEAD
 # git push ${DOXYGEN_REPOSITORY} master
+=======
+git push ${DOXYGEN_REPOSITORY} master
+>>>>>>> 26891742c0188b55a674d96671491b6334dea9c5

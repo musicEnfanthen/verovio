@@ -24,6 +24,7 @@
 namespace vrv {
 
 class Arpeg;
+class BracketSpan;
 class Clef;
 class ControlElement;
 class Dir;
@@ -68,9 +69,9 @@ namespace musicxml {
         int m_number;
     };
 
-    class OpenHairpin {
+    class OpenSpanner {
     public:
-        OpenHairpin(const int &dirN, const int &lastMeasureCount)
+        OpenSpanner(const int &dirN, const int &lastMeasureCount)
         {
             m_dirN = dirN;
             m_lastMeasureCount = lastMeasureCount;
@@ -295,6 +296,7 @@ private:
     data_BARRENDITION ConvertStyleToRend(std::string value, bool repeat);
     data_BOOLEAN ConvertWordToBool(std::string value);
     data_DURATION ConvertTypeToDur(std::string value);
+    std::wstring ConvertTypeToVerovioText(std::string value);
     data_PITCHNAME ConvertStepToPitchName(std::string value);
     curvature_CURVEDIR ConvertOrientationToCurvedir(std::string);
     fermataVis_SHAPE ConvertFermataShape(std::string);
@@ -321,8 +323,8 @@ private:
     /* measure time */
     int m_durTotal = 0;
     /* meter signature */
-    int m_meterCount = 0;
-    int m_meterUnit = 0;
+    int m_meterCount = 4;
+    int m_meterUnit = 4;
     /* LastElementID */
     std::string m_ID;
     /* The stack for piling open LayerElements (beams, tuplets, chords, etc.)  */
@@ -336,10 +338,11 @@ private:
     /* The stack for tie stops that might come before that tie was opened */
     std::vector<Note *> m_tieStopStack;
     /* The stack for hairpins */
-    std::vector<std::pair<Hairpin *, musicxml::OpenHairpin> > m_hairpinStack;
+    std::vector<std::pair<Hairpin *, musicxml::OpenSpanner> > m_hairpinStack;
     /* The stack for hairpin stops that might occur before a hairpin was started staffNumber, tStamp2, (hairpinNumber,
      * measureCount) */
-    std::vector<std::tuple<int, double, musicxml::OpenHairpin> > m_hairpinStopStack;
+    std::vector<std::tuple<int, double, musicxml::OpenSpanner> > m_hairpinStopStack;
+    std::vector<std::pair<BracketSpan *, musicxml::OpenSpanner> > m_bracketStack;
     /* The stack of endings to be inserted at the end of XML import */
     std::vector<std::pair<std::vector<Measure *>, musicxml::EndingInfo> > m_endingStack;
     /* The stack of open dashes (direction-type) containing *ControlElement, OpenDashes */

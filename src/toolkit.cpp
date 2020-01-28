@@ -58,7 +58,7 @@ char *Toolkit::m_humdrumBuffer = NULL;
 Toolkit::Toolkit(bool initFont)
 {
     m_scale = DEFAULT_SCALE;
-    m_format = AUTO;
+    m_inputFrom = AUTO;
 
     // default page size
     m_scoreBasedMei = false;
@@ -108,58 +108,67 @@ bool Toolkit::SetScale(int scale)
     return true;
 }
 
-bool Toolkit::SetOutputFormat(std::string const &outformat)
+bool Toolkit::SetOutputTo(std::string const &outputTo)
 {
-    if ((outformat == "humdrum") || (outformat == "hum")) {
-        m_outformat = HUMDRUM;
+    if ((outputTo == "humdrum") || (outputTo == "hum")) {
+        m_outputTo = HUMDRUM;
     }
-    else if (outformat == "mei") {
-        m_outformat = MEI;
+    else if (outputTo == "mei") {
+        m_outputTo = MEI;
     }
-    else if (outformat == "midi") {
-        m_outformat = MIDI;
+    else if (outputTo == "midi") {
+        m_outputTo = MIDI;
     }
-    else if (outformat == "timemap") {
-        m_outformat = TIMEMAP;
+    else if (outputTo == "timemap") {
+        m_outputTo = TIMEMAP;
     }
-    else if (outformat != "svg") {
+    else if (outputTo != "svg") {
         LogError("Output format can only be: mei, humdrum, midi, timemap or svg");
         return false;
     }
     return true;
 }
 
-bool Toolkit::SetFormat(std::string const &informat)
+bool Toolkit::SetInputFrom(std::string const &inputFrom)
 {
-    if (informat == "abc") {
-        m_format = ABC;
+    if (inputFrom == "abc") {
+        m_inputFrom = ABC;
     }
-    else if (informat == "pae") {
-        m_format = PAE;
+    else if (inputFrom == "pae") {
+        m_inputFrom = PAE;
     }
-    else if (informat == "darms") {
-        m_format = DARMS;
+    else if (inputFrom == "darms") {
+        m_inputFrom = DARMS;
     }
-    else if ((informat == "humdrum") || (informat == "hum")) {
-        m_format = HUMDRUM;
+    else if ((inputFrom == "humdrum") || (inputFrom == "hum")) {
+        m_inputFrom = HUMDRUM;
     }
-    else if (informat == "mei") {
-        m_format = MEI;
+    else if (inputFrom == "mei") {
+        m_inputFrom = MEI;
     }
-    else if ((informat == "musicxml") || (informat == "xml")) {
-        m_format = MUSICXML;
+    else if ((inputFrom == "musicxml") || (inputFrom == "xml")) {
+        m_inputFrom = MUSICXML;
     }
-    else if (informat == "musicxml-hum") {
-        m_format = MUSICXMLHUM;
+    else if (inputFrom == "md") {
+        m_inputFrom = MUSEDATAHUM;
     }
-    else if (informat == "mei-hum") {
-        m_format = MEIHUM;
+    else if (inputFrom == "musedata") {
+        m_inputFrom = MUSEDATAHUM;
     }
-    else if (informat == "esac") {
-        m_format = ESAC;
+    else if (inputFrom == "musedata-hum") {
+        m_inputFrom = MUSEDATAHUM;
     }
-    else if (informat == "auto") {
-        m_format = AUTO;
+    else if (inputFrom == "musicxml-hum") {
+        m_inputFrom = MUSICXMLHUM;
+    }
+    else if (inputFrom == "mei-hum") {
+        m_inputFrom = MEIHUM;
+    }
+    else if (inputFrom == "esac") {
+        m_inputFrom = ESAC;
+    }
+    else if (inputFrom == "auto") {
+        m_inputFrom = AUTO;
     }
     else {
         LogError("Input format can only be: mei, humdrum, pae, abc, musicxml or darms");
@@ -168,7 +177,7 @@ bool Toolkit::SetFormat(std::string const &informat)
     return true;
 }
 
-FileFormat Toolkit::IdentifyInputFormat(const std::string &data)
+FileFormat Toolkit::IdentifyInputFrom(const std::string &data)
 {
 #ifdef MUSICXML_DEFAULT_HUMDRUM
     FileFormat musicxmlDefault = MUSICXMLHUM;
@@ -181,6 +190,13 @@ FileFormat Toolkit::IdentifyInputFormat(const std::string &data)
     }
     if (data[0] == 0) {
         return UNKNOWN;
+    }
+    std::string excerpt = data.substr(0, 2000);
+    std::string::size_type found = excerpt.find("Group memberships:");
+    if (found != std::string::npos) {
+        // MuseData may contain '@' as first character, so needs
+        // to be checked before PAE identification.
+        return MUSEDATAHUM;
     }
     if (data[0] == '@') {
         return PAE;
@@ -338,9 +354,9 @@ bool Toolkit::LoadData(const std::string &data)
     std::string newData;
     FileInputStream *input = NULL;
 
-    auto inputFormat = m_format;
+    auto inputFormat = m_inputFrom;
     if (inputFormat == AUTO) {
-        inputFormat = IdentifyInputFormat(data);
+        inputFormat = IdentifyInputFrom(data);
     }
     if (inputFormat == ABC) {
 #ifndef NO_ABC_SUPPORT
@@ -373,7 +389,7 @@ bool Toolkit::LoadData(const std::string &data)
         Doc tempdoc;
         tempdoc.SetOptions(m_doc.GetOptions());
         HumdrumInput *tempinput = new HumdrumInput(&tempdoc, "");
-        if (GetOutputFormat() == HUMDRUM) {
+        if (GetOutputTo() == HUMDRUM) {
             tempinput->SetOutputFormat("humdrum");
         }
 
@@ -385,7 +401,7 @@ bool Toolkit::LoadData(const std::string &data)
 
         SetHumdrumBuffer(tempinput->GetHumdrumString().c_str());
 
-        if (GetOutputFormat() == HUMDRUM) {
+        if (GetOutputTo() == HUMDRUM) {
             return true;
         }
 
@@ -468,6 +484,34 @@ bool Toolkit::LoadData(const std::string &data)
         input = new MeiInput(&m_doc, "");
     }
 
+    else if (inputFormat == MUSEDATAHUM) {
+        // This is the indirect converter from MuseData to MEI using iohumdrum:
+        hum::Tool_musedata2hum converter;
+        stringstream conversion;
+        bool status = converter.convertString(conversion, data);
+        if (!status) {
+            LogError("Error converting MuseData data");
+            return false;
+        }
+        std::string buffer = conversion.str();
+        SetHumdrumBuffer(buffer.c_str());
+
+        // Now convert Humdrum into MEI:
+        Doc tempdoc;
+        tempdoc.SetOptions(m_doc.GetOptions());
+        FileInputStream *tempinput = new HumdrumInput(&tempdoc, "");
+        if (!tempinput->ImportString(conversion.str())) {
+            LogError("Error importing Humdrum data (4)");
+            delete tempinput;
+            return false;
+        }
+        MeiOutput meioutput(&tempdoc, "");
+        meioutput.SetScoreBasedMEI(true);
+        newData = meioutput.GetOutput();
+        delete tempinput;
+        input = new MeiInput(&m_doc, "");
+    }
+
     else if (inputFormat == ESAC) {
         // This is the indirect converter from EsAC to MEI using iohumdrum:
         hum::Tool_esac2hum converter;
@@ -485,7 +529,7 @@ bool Toolkit::LoadData(const std::string &data)
         tempdoc.SetOptions(m_doc.GetOptions());
         FileInputStream *tempinput = new HumdrumInput(&tempdoc, "");
         if (!tempinput->ImportString(conversion.str())) {
-            LogError("Error importing Humdrum data (4)");
+            LogError("Error importing Humdrum data (5)");
             delete tempinput;
             return false;
         }
@@ -524,6 +568,12 @@ bool Toolkit::LoadData(const std::string &data)
 
     // generate missing measure numbers
     m_doc.GenerateMeasureNumbers();
+
+    // transpose the content if necessary
+    if (m_options->m_transpose.GetValue() != "") {
+        m_doc.PrepareDrawing();
+        m_doc.TransposeDoc();
+    }
 
     m_doc.PrepareDrawing();
 
@@ -761,8 +811,14 @@ bool Toolkit::SetOptions(const std::string &json_options)
         if (m_options->GetItems()->count(iter->first) == 0) {
             // Base options
             if (iter->first == "format") {
+                LogWarning("Option format is deprecated; use from instead");
                 if (json.has<jsonxx::String>("format")) {
-                    SetFormat(json.get<jsonxx::String>("format"));
+                    SetInputFrom(json.get<jsonxx::String>("format"));
+                }
+            }
+            if (iter->first == "from") {
+                if (json.has<jsonxx::String>("from")) {
+                    SetInputFrom(json.get<jsonxx::String>("from"));
                 }
             }
             else if (iter->first == "scale") {
@@ -835,9 +891,9 @@ bool Toolkit::SetOptions(const std::string &json_options)
                 }
             }
             else if (iter->first == "inputFormat") {
-                LogWarning("Option inputFormat is deprecated; use format instead");
+                LogWarning("Option inputFormat is deprecated; use from instead");
                 if (json.has<jsonxx::String>("inputFormat")) {
-                    SetFormat(json.get<jsonxx::String>("inputFormat"));
+                    SetInputFrom(json.get<jsonxx::String>("inputFormat"));
                 }
             }
             else if (iter->first == "noFooter") {
@@ -1190,7 +1246,8 @@ std::string Toolkit::GetElementsAtTime(int millisec)
 
     // Here we need to check that the midi timemap is done
     if (!m_doc.HasMidiTimemap()) {
-        return o.json();
+        // generate MIDI timemap before progressing
+        m_doc.CalculateMidiTimemap();
     }
 
     MeasureOnsetOffsetComparison matchMeasureTime(millisec);
