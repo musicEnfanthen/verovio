@@ -81,17 +81,25 @@ jobs:
           repository: ${{ env.EMSCRIPTEN_REPOSITORY }}
           path: ${{ env.EMSCRIPTEN_PATH }}
 
+      - name: Show directory structure
+        run: |
+          ls -alh
+
+          echo 'cd emsdk'
+          cd $EMSCRIPTEN_PATH
+          ls -alh
+
       - name: Cache emscripten artifacts
-          uses: actions/cache@v1
-          env:
-            cache-name: cache-emscripten
-          with:
-            path: ${{ env.EMSCRIPTEN_PATH }}
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-{{ hashFiles('${{ env.EMSCRIPTEN_PATH }}/package-lock.json') }}
-            restore-keys: |
-              ${{ runner.os }}-build-${{ env.cache-name }}-
-              ${{ runner.os }}-build-
-              ${{ runner.os }}-
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-emscripten
+        with:
+          path: ${{ env.EMSCRIPTEN_PATH }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('emsdk/emsdk_manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Install emscripten
         run: |
@@ -114,20 +122,14 @@ jobs:
           ./emsdk activate latest
           source ./emsdk_env.sh
 
-          cd ..
-          echo "Show content"
-          ls -alh
-
-          cd ./emscripten
-          echo "Show content"
-          ls -alh
-
       - name: build toolikt
         run: |
+          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH/emscripten
           echo "Building toolkit without humdrum"
           ./buildToolkit -c -H
-          cp build/verovio-toolkit.js* $OUTPUT_DIRECTORY/javascript/develop/
+          cp build/verovio-toolkit.js* $OUTPUT_PATH/javascript/develop/
+
           echo "Change to Output Directory"
-          cd $OUTPUT_DIRECTORY/javascript/develop/
+          cd $OUTPUT_PATH/javascript/develop/
           "Show content"
           ls -alh
