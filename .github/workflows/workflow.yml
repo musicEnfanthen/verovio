@@ -1,0 +1,133 @@
+name: Verovio CI
+
+on:
+  # Trigger the workflow on push,
+  # but only for the travis-test branch
+  push:
+    branches:
+      - travis-test
+
+# globals
+env:
+  # repos
+  VEROVIO_REPOSITORY: musicenfanthen/verovio
+  EMSCRIPTEN_REPOSITORY: emscripten-core/emsdk
+  # branches
+  BUILD_BRANCH: travis-test   # TODO: switch back to "develop"
+  GH_PAGES_BRANCH: gh-pages
+  TEMPORARY_OUTPUT_BRANCH: gh-pages-update-toolkit
+  # directories
+  CURRENT_PATH: $(pwd)
+  EMSCRIPTEN_PATH: emsdk
+  GH_PAGES_PATH: gh-pages
+
+
+jobs:
+  # Build c++ code on different os in parallel
+  build_cpp:
+    name: Build C++
+    # This job runs on all the os specified in strategy.matrix.os
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v2
+        id: checkout_main_repo
+
+      - name: Run make on ${{ matrix.os }}
+        id: make
+        run: |
+          cd $GITHUB_WORKSPACE/tools
+          cmake .
+          make
+
+  # Precache the emscripten installation and make-build for the JS Toolkit Build
+  precache:
+    name: Precache
+    # This job runs on linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Output Environment
+        uses: allenevans/set-env@v1.0.0
+        with:
+          OUTPUT_PATH: ${{ github.workspace }}/${{ env.GH_PAGES_PATH}}
+
+      - name: Checkout main repo
+        uses: actions/checkout@v2
+
+      - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.GH_PAGES_BRANCH }}
+          path: ${{ env.GH_PAGES_PATH }}
+
+
+      - name: Show directory structure
+        run: |
+          ls -alh
+          git status
+
+          echo 'cd gh-pages/_includes'
+          echo ${OUTPUT_PATH}
+          echo ${OUTPUT_PATH}/_includes
+          cd $OUTPUT_PATH/_includes
+          ls -alh
+
+      - name: Checkout EMSCRIPTEN_REPOSITORY into EMSCRIPTEN_PATH
+        id: emscripten
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.EMSCRIPTEN_REPOSITORY }}
+          path: ${{ env.EMSCRIPTEN_PATH }}
+
+      - name: Install emscripten
+        run: |
+          echo "Installing emscripten"
+          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH
+          ./emsdk install latest
+
+      - name: Make build
+        run: |
+          cd $GITHUB_WORKSPACE/tools
+          cmake .
+          make -j3
+
+          echo "Update the documentation of the option list"
+          ./verovio -? > $OUTPUT_PATH/_includes/cli.txt
+
+
+  build-toolkit:
+    name: Build Toolkit
+    # This job runs on linux
+    runs-on: ubuntu-latest
+    needs: precache
+    steps:
+      - name: Show directory structure
+        run: |
+          ls -alh
+          git status
+
+          echo 'cd gh-pages/_includes'
+          echo ${OUTPUT_PATH}
+          echo ${OUTPUT_PATH}/_includes
+          cd $OUTPUT_PATH/_includes
+          ls -alh
+          
+      - name: Activate and source emscripten tools
+        run: |
+          cd ${{ env.EMSCRIPTEN_DIRECTORY }}
+          ./emsdk activate latest
+          source ./emsdk_env.sh
+          cd ..
+          cd ./emscripten
+      - name: build toolikt
+        run: |
+          echo "Building toolkit without humdrum"
+          ./buildToolkit -c -H
+          cp build/verovio-toolkit.js* $OUTPUT_DIRECTORY/javascript/develop/
+          echo "Change to Output Directory"
+          cd $OUTPUT_DIRECTORY/javascript/develop/
+          "Show content"
+          ls -alh
