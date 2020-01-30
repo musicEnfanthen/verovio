@@ -124,7 +124,7 @@ jobs:
 
       - name: build toolikt
         run: |
-          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH/emscripten
+          cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
           ./buildToolkit -c -H
           cp build/verovio-toolkit.js* $OUTPUT_PATH/javascript/develop/
