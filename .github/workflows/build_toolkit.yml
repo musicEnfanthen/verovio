@@ -1,4 +1,4 @@
-name: Verovio CI
+name: Verovio CI (build JS toolkit)
 
 on:
   # Trigger the workflow on push,
@@ -23,33 +23,13 @@ env:
 
 
 jobs:
-  # Build c++ code on different os in parallel
-  build_cpp:
-    name: Build C++
-    # This job runs on all the os specified in strategy.matrix.os
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-    steps:
-      - name: Checkout main repo
-        uses: actions/checkout@v2
-        id: checkout_main_repo
-
-      - name: Run make on ${{ matrix.os }}
-        id: make
-        run: |
-          cd $GITHUB_WORKSPACE/tools
-          cmake .
-          make
-
   # Precache the emscripten installation and make-build for the JS Toolkit Build
   precache:
     name: Precache
     # This job runs on linux
     runs-on: ubuntu-latest
     steps:
-      - name: Set Output Environment
+      - name: Set Environment Variable OUTPUT_PATH
         uses: allenevans/set-env@v1.0.0
         with:
           OUTPUT_PATH: ${{ github.workspace }}/${{ env.GH_PAGES_PATH}}
@@ -74,6 +54,18 @@ jobs:
           cd $OUTPUT_PATH/_includes
           ls -alh
 
+      - name: Cache emscripten artifacts
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-emscripten
+        with:
+          path: ${{ env.EMSCRIPTEN_PATH }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('emsdk/emsdk_manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Checkout EMSCRIPTEN_REPOSITORY into EMSCRIPTEN_PATH
         id: emscripten
         uses: actions/checkout@v2
@@ -88,18 +80,6 @@ jobs:
           echo 'cd emsdk'
           cd $EMSCRIPTEN_PATH
           ls -alh
-
-      - name: Cache emscripten artifacts
-        uses: actions/cache@v1
-        env:
-          cache-name: cache-emscripten
-        with:
-          path: ${{ env.EMSCRIPTEN_PATH }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('emsdk/emsdk_manifest.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       - name: Install emscripten
         run: |
@@ -122,8 +102,6 @@ jobs:
           ./emsdk activate latest
           source ./emsdk_env.sh
 
-      - name: build toolikt
-        run: |
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
           ./buildToolkit -c -H
