@@ -1,25 +1,26 @@
-name: Verovio CI (build JS toolkit)
+name: Verovio CI (build JS toolkit) for ${{ GITHUB_SHA }}
 
 on:
   # Trigger the workflow on push,
   # but only for the travis-test branch
   push:
     branches:
-      - travis-test
+      - travis-test   # TODO: switch back to "develop"
 
 # globals
 env:
   # repos
-  VEROVIO_REPOSITORY: musicenfanthen/verovio
+  VEROVIO_REPOSITORY: musicenfanthen/verovio  # TODO: switch back to "rism-ch/verovio"
   EMSCRIPTEN_REPOSITORY: emscripten-core/emsdk
+
   # branches
   BUILD_BRANCH: travis-test   # TODO: switch back to "develop"
   GH_PAGES_BRANCH: gh-pages
-  TEMPORARY_OUTPUT_BRANCH: gh-pages-update-toolkit
+
   # directories
-  CURRENT_PATH: $(pwd)
   EMSCRIPTEN_PATH: emsdk
   GH_PAGES_PATH: gh-pages
+
   # others
   EMSCRIPTEN_VERSION: 1.39.6
 
@@ -62,9 +63,6 @@ jobs:
         with:
           path: ${{ env.EMSCRIPTEN_PATH }}
           key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
-          restore-keys: |
-            ${{ runner.os }}-emsdk-
-            ${{ runner.os }}-
 
       - name: Setup emsdk (use cache if found, create otherwise)
         uses: mymindstorm/setup-emsdk@v2
@@ -100,5 +98,5 @@ jobs:
 
           echo "Change to Output Directory"
           cd $OUTPUT_PATH/javascript/develop/
-          "Show content"
+          echo "Show content"
           ls -alh
