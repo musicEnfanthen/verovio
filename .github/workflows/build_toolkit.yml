@@ -91,12 +91,8 @@ jobs:
           echo "Update the documentation of the option list"
           ./verovio -? > $OUTPUT_PATH/_includes/cli.txt
 
-      - name: Activate and source emscripten tools
+      - name: Build Toolkit
         run: |
-          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH
-          ./emsdk activate latest
-          source ./emsdk_env.sh
-
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
           ./buildToolkit -c -H

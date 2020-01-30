@@ -32,21 +32,21 @@ jobs:
             compiler: clang
             version: "9"
 
-          - os: windows
-            compiler: cl
-            version: "default"
-
-          - os: windows
-            compiler: clang-cl
-            version: "latest"
-
-          - os: windows
-            compiler: clang
-            version: "latest"
-
-          - os: windows
-            compiler: gcc
-            version: "latest"
+#          - os: windows
+#            compiler: cl
+#            version: "default"
+#
+#          - os: windows
+#            compiler: clang-cl
+#            version: "latest"
+#
+#          - os: windows
+#            compiler: clang
+#            version: "latest"
+#
+#          - os: windows
+#            compiler: gcc
+#            version: "latest"
 
           - os: macos
             compiler: xcode
