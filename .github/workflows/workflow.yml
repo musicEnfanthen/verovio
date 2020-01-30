@@ -63,7 +63,6 @@ jobs:
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_PATH }}
 
-
       - name: Show directory structure
         run: |
           ls -alh
@@ -82,6 +81,18 @@ jobs:
           repository: ${{ env.EMSCRIPTEN_REPOSITORY }}
           path: ${{ env.EMSCRIPTEN_PATH }}
 
+      - name: Cache emscripten artifacts
+          uses: actions/cache@v1
+          env:
+            cache-name: cache-emscripten
+          with:
+            path: ${{ env.EMSCRIPTEN_PATH }}
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-{{ hashFiles('${{ env.EMSCRIPTEN_PATH }}/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+
       - name: Install emscripten
         run: |
           echo "Installing emscripten"
@@ -97,31 +108,20 @@ jobs:
           echo "Update the documentation of the option list"
           ./verovio -? > $OUTPUT_PATH/_includes/cli.txt
 
-
-  build-toolkit:
-    name: Build Toolkit
-    # This job runs on linux
-    runs-on: ubuntu-latest
-    needs: precache
-    steps:
-      - name: Show directory structure
-        run: |
-          ls -alh
-          git status
-
-          echo 'cd gh-pages/_includes'
-          echo ${OUTPUT_PATH}
-          echo ${OUTPUT_PATH}/_includes
-          cd $OUTPUT_PATH/_includes
-          ls -alh
-          
       - name: Activate and source emscripten tools
         run: |
-          cd ${{ env.EMSCRIPTEN_DIRECTORY }}
+          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH
           ./emsdk activate latest
           source ./emsdk_env.sh
+
           cd ..
+          echo "Show content"
+          ls -alh
+
           cd ./emscripten
+          echo "Show content"
+          ls -alh
+
       - name: build toolikt
         run: |
           echo "Building toolkit without humdrum"
