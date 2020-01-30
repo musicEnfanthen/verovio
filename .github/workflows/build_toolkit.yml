@@ -20,6 +20,8 @@ env:
   CURRENT_PATH: $(pwd)
   EMSCRIPTEN_PATH: emsdk
   GH_PAGES_PATH: gh-pages
+  # others
+  EMSCRIPTEN_VERSION: 1.39.6
 
 
 jobs:
@@ -56,36 +58,29 @@ jobs:
 
       - name: Cache emscripten artifacts
         uses: actions/cache@v1
-        env:
-          cache-name: cache-emscripten
+        id: cache
         with:
           path: ${{ env.EMSCRIPTEN_PATH }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('emsdk/emsdk_manifest.json') }}
+          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-emsdk-
             ${{ runner.os }}-
 
-      - name: Checkout EMSCRIPTEN_REPOSITORY into EMSCRIPTEN_PATH
-        id: emscripten
-        uses: actions/checkout@v2
+      - name: Setup emsdk (use cache if found, create otherwise)
+        uses: mymindstorm/setup-emsdk@v2
         with:
-          repository: ${{ env.EMSCRIPTEN_REPOSITORY }}
-          path: ${{ env.EMSCRIPTEN_PATH }}
+          # Make sure to set a version number!
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+          # This is the name of the cache folder.
+          # The cache folder will be placed in the build directory,
+          #  so make sure it doesn't conflict with anything!
+          actions-cache-folder: ${{ env.EMSCRIPTEN_PATH }}
+          # This stops it from using tc.cacheDir since we are using
+          #  actions/cache.
+          no-cache: true
 
-      - name: Show directory structure
-        run: |
-          ls -alh
-
-          echo 'cd emsdk'
-          cd $EMSCRIPTEN_PATH
-          ls -alh
-
-      - name: Install emscripten
-        run: |
-          echo "Installing emscripten"
-          cd $GITHUB_WORKSPACE/$EMSCRIPTEN_PATH
-          ./emsdk install latest
+      - name: Verify
+        run: emcc -v
 
       - name: Make build
         run: |

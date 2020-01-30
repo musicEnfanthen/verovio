@@ -14,46 +14,47 @@ jobs:
     # This job runs on all the os specified in strategy.matrix.os
     runs-on: ${{ matrix.config.os }}-latest
     strategy:
-      config:
-        - os: ubuntu
-          compiler: gcc
-          version: "6"
+      matrix:
+        config:
+          - os: ubuntu
+            compiler: gcc
+            version: "6"
 
-        - os: ubuntu
-          compiler: gcc
-          version: "9"
+          - os: ubuntu
+            compiler: gcc
+            version: "9"
 
-        - os: ubuntu
-          compiler: clang
-          version: "6.0"
+          - os: ubuntu
+            compiler: clang
+            version: "6.0"
 
-        - os: ubuntu
-          compiler: clang
-          version: "9"
+          - os: ubuntu
+            compiler: clang
+            version: "9"
 
-        - os: windows
-          compiler: cl
-          version: "default"
+          - os: windows
+            compiler: cl
+            version: "default"
 
-        - os: windows
-          compiler: clang-cl
-          version: "latest"
+          - os: windows
+            compiler: clang-cl
+            version: "latest"
 
-        - os: windows
-          compiler: clang
-          version: "latest"
+          - os: windows
+            compiler: clang
+            version: "latest"
 
-        - os: windows
-          compiler: gcc
-          version: "latest"
+          - os: windows
+            compiler: gcc
+            version: "latest"
 
-        - os: macos
-          compiler: xcode
-          version: "default"
+          - os: macos
+            compiler: xcode
+            version: "default"
 
-        - os: macos
-          compiler: gcc
-          version: "latest"
+          - os: macos
+            compiler: gcc
+            version: "latest"
 
     steps:
       - name: Checkout main repo
