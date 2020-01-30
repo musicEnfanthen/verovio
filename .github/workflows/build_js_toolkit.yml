@@ -1,4 +1,4 @@
-name: Verovio CI (build JS toolkit) for ${{ GITHUB_SHA }}
+name: Verovio CI (build JS toolkit)
 
 on:
   # Trigger the workflow on push,
