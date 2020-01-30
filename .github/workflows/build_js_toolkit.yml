@@ -40,28 +40,32 @@ jobs:
       - name: Checkout main repo
         uses: actions/checkout@v2
 
+      - name: Cache output artifacts
+        uses: actions/cache@v1
+        id: cache-output-path
+        with:
+          # path for cache
+          path: ${{ env.OUTPUT_PATH }}
+          # key for cache
+          key: ${{ runner.os }}-output-${{ github.sha }}
+
+      - name: Verify
+        run: |
+          echo ${OUTPUT_PATH}
+
       - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
         uses: actions/checkout@v2
         with:
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_PATH }}
 
-      - name: Show directory structure
-        run: |
-          ls -alh
-          git status
-
-          echo 'cd gh-pages/_includes'
-          echo ${OUTPUT_PATH}
-          echo ${OUTPUT_PATH}/_includes
-          cd $OUTPUT_PATH/_includes
-          ls -alh
-
-      - name: Cache emscripten artifacts
+      - name: Cache emsdk artifacts
         uses: actions/cache@v1
-        id: cache
+        id: cache-emsdk
         with:
+          # path for cache
           path: ${{ env.EMSCRIPTEN_PATH }}
+          # key for cache
           key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
 
       - name: Setup emsdk (use cache if found, create otherwise)
@@ -96,7 +100,10 @@ jobs:
           ./buildToolkit -c -H
           cp build/verovio-toolkit.js* $OUTPUT_PATH/javascript/develop/
 
+      - name: Verify
+        run: |
           echo "Change to Output Directory"
           cd $OUTPUT_PATH/javascript/develop/
           echo "Show content"
           ls -alh
+          git status
