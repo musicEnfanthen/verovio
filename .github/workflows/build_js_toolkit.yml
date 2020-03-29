@@ -87,8 +87,8 @@ jobs:
       - name: Make build
         run: |
           cd $GITHUB_WORKSPACE/tools
-          cmake .
-          make -j3
+          cmake ../cmake
+          make -j 8
 
           echo "Update the documentation of the option list"
           ./verovio -? > $OUTPUT_PATH/_includes/cli.txt

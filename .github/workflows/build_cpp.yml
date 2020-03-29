@@ -119,6 +119,6 @@ jobs:
         id: make
         run: |
           cd $GITHUB_WORKSPACE/tools
-          cmake .
-          make
+          cmake ../cmake
+          make -j 8
 
