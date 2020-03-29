@@ -1,4 +1,6 @@
 name: Verovio CI (build C++)
+# Build c++ code on different os in parallel.
+# Adapted from https://github.com/DaanDeMeyer/reproc/blob/master/.github/workflows/main.yml .
 
 on:
   # Trigger the workflow on push,
@@ -8,8 +10,8 @@ on:
       - travis-test
 
 jobs:
-  # Build c++ code on different os in parallel
   build_cpp:
+
     name: Build ${{ matrix.config.os }}-${{ matrix.config.compiler }}-${{ matrix.config.version }}
     # This job runs on all the os specified in strategy.matrix.os
     runs-on: ${{ matrix.config.os }}-latest
