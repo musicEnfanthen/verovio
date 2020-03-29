@@ -48,7 +48,7 @@
 #include "pugixml.hpp"
 #include "unchecked.h"
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
@@ -246,7 +246,7 @@ struct timeval start;
 /** For disabling log */
 bool noLog = false;
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 std::vector<std::string> logBuffer;
 #endif
 
@@ -269,12 +269,12 @@ void LogDebug(const char *fmt, ...)
 {
     if (noLog) return;
 #if defined(DEBUG)
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     std::string s;
     va_list args;
     va_start(args, fmt);
     s = "[Debug] " + StringFormatVariable(fmt, args) + "\n";
-    AppendLogBuffer(true, s, CONSOLE_LOG);
+    AppendLogBuffer(true, s, CONSOLE_DEBUG);
     va_end(args);
 #else
     va_list args;
@@ -290,7 +290,7 @@ void LogDebug(const char *fmt, ...)
 void LogError(const char *fmt, ...)
 {
     if (noLog) return;
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     std::string s;
     va_list args;
     va_start(args, fmt);
@@ -310,7 +310,7 @@ void LogError(const char *fmt, ...)
 void LogMessage(const char *fmt, ...)
 {
     if (noLog) return;
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     std::string s;
     va_list args;
     va_start(args, fmt);
@@ -330,7 +330,7 @@ void LogMessage(const char *fmt, ...)
 void LogWarning(const char *fmt, ...)
 {
     if (noLog) return;
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     std::string s;
     va_list args;
     va_start(args, fmt);
@@ -352,7 +352,7 @@ void DisableLog()
     noLog = true;
 }
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 bool LogBufferContains(const std::string &s)
 {
     std::vector<std::string>::iterator iter = logBuffer.begin();
@@ -365,15 +365,16 @@ bool LogBufferContains(const std::string &s)
 
 void AppendLogBuffer(bool checkDuplicate, std::string message, consoleLogLevel level)
 {
-    if (checkDuplicate && LogBufferContains(message)) return;
-    logBuffer.push_back(message);
-
     switch (level) {
+        case CONSOLE_DEBUG: EM_ASM_ARGS({ console.debug(UTF8ToString($0)); }, message.c_str()); break;
         case CONSOLE_ERROR: EM_ASM_ARGS({ console.error(UTF8ToString($0)); }, message.c_str()); break;
         case CONSOLE_WARN: EM_ASM_ARGS({ console.warn(UTF8ToString($0)); }, message.c_str()); break;
         case CONSOLE_INFO: EM_ASM_ARGS({ console.info(UTF8ToString($0)); }, message.c_str()); break;
         default: EM_ASM_ARGS({ console.log(UTF8ToString($0)); }, message.c_str()); break;
     }
+
+    if (checkDuplicate && LogBufferContains(message)) return;
+    logBuffer.push_back(message);
 }
 
 #endif
