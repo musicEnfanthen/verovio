@@ -69,11 +69,11 @@ jobs:
     ################
     # precaches the emscripten installation, gh-pages, and make-build
     # has to come before "build-toolkit" stage
-#    - stage: precache
-#      name: "Precache emscripten installation, make build and gh-pages"
-#      os: linux
-#      script:
-#        - ./travis/ci_precache.sh
+    - stage: precache
+      name: "Precache emscripten installation, make build and gh-pages"
+      os: linux
+      script:
+        - ./travis/ci_precache.sh
 
     #####################
     # BUILD-TOOLKIT STAGE
