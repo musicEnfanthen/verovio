@@ -92,6 +92,7 @@ jobs:
 
           echo "Update the documentation of the option list"
           echo "./verovio -? > $OUTPUT_PATH/_includes/cli.txt"
+          ./verovio -? && echo $? || echo $?
           ./verovio -? > $OUTPUT_PATH/_includes/cli.txt && echo $? || echo $?
 
       - name: Build Toolkit
