@@ -64,12 +64,8 @@ cmake ../cmake
 make -j 8
 
 echo "Update the documentation of the option list"
-echo "cat ./verovio"
-cat ./verovio
-
 echo "./verovio -? > $OUTPUT_PATH/_includes/cli.txt"
-./verovio -? > $OUTPUT_PATH/_includes/cli.txt
-cat $OUTPUT_PATH/_includes/cli.txt
+./verovio -? > $OUTPUT_PATH/_includes/cli.txt && echo $? || echo $?
 
 # Return to the root
 cd ..
