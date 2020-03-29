@@ -39,7 +39,7 @@ cache:
 # conditions for any stage can be included here
 stages:
   - build-c++
-  #- precache
+  - precache
   #- build-toolkit
   #- deploy
 
