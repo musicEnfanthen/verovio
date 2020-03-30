@@ -65,8 +65,8 @@ make -j 8
 
 echo "Update the documentation of the option list"
 echo "./verovio -? > $OUTPUT_DIRECTORY/_includes/cli.txt"
-./verovio -? && echo $? || echo $?
-./verovio -? > OUTPUT_DIRECTORY/_includes/cli.txt && echo $? || echo $?
+./verovio -?; echo $?
+./verovio -? > OUTPUT_DIRECTORY/_includes/cli.txt; echo $?
 
 # Return to the root
 cd ..
