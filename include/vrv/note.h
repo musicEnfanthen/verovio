@@ -13,6 +13,7 @@
 //----------------------------------------------------------------------------
 
 #include "accid.h"
+#include "atts_externalsymbols.h"
 #include "atts_mensural.h"
 #include "atts_midi.h"
 #include "atts_shared.h"
@@ -49,9 +50,11 @@ class Note : public LayerElement,
              public AttColor,
              public AttColoration,
              public AttCue,
+             public AttExtSym,
              public AttGraced,
              public AttMidiVelocity,
              public AttNoteAnlMensural,
+             public AttNoteHeads,
              public AttStems,
              public AttStemsCmn,
              public AttTiePresent,
@@ -86,11 +89,16 @@ public:
      * Override the method since alignment is required.
      * For notes we want not to align notes within a ligature (except first and last)
      */
-    virtual bool HasToBeAligned() const;
+    virtual bool HasToBeAligned() const { return true; }
 
     /**
      * Add an element (a verse or an accid) to a note.
      * Only Verse and Accid elements will be actually added to the note.
+     */
+    virtual bool IsSupportedChild(Object *object);
+
+    /**
+     * Overwritten method for note
      */
     virtual void AddChild(Object *object);
 
@@ -111,7 +119,7 @@ public:
     ///@}
 
     /**
-     * Check if the note has leger lines.
+     * Check if the note has ledger lines.
      * If staff is passed, use it for getting the staff line number.
      * Otherwise, it will look for the Staff ancestor.
      * Set the value of ledger lines above or below.
@@ -170,6 +178,11 @@ public:
     wchar_t GetMensuralSmuflNoteHead();
 
     /**
+     * Return a SMuFL code for the notehead
+     */
+    wchar_t GetNoteheadGlyph(const int duration) const;
+
+    /**
      * Check if a note or its parent chord are visible
      */
     bool IsVisible();
@@ -199,9 +212,9 @@ public:
     //----------//
 
     /**
-     * See Object::ConvertAnalyticalMarkup
+     * See Object::ConvertMarkupAnalytical
      */
-    virtual int ConvertAnalyticalMarkup(FunctorParams *functorParams);
+    virtual int ConvertMarkupAnalytical(FunctorParams *functorParams);
 
     /**
      * See Object::CalcStem
@@ -272,6 +285,12 @@ private:
     TransPitch GetTransPitch();
 
     void UpdateFromTransPitch(const TransPitch &tp);
+
+    /**
+     * Return whether dots are overlapping with flag. Take into account flag height, its position as well
+     * as position of the note and position of the dots
+     */
+    bool IsDotOverlappingWithFlag(Doc *doc, const int staffSize, bool isDotShifted);
 
 public:
     //

@@ -2,9 +2,8 @@ branches:
   only:
     - travis-test # TODO: switch back to "develop"
 
-sudo: false
 os: linux
-dist: bionic
+dist: focal
 language: cpp
 
 git:

@@ -1,6 +1,36 @@
 # Changelog
 
 ## [unreleased]
+* Improved barline rendition (@rettinghaus)
+
+## [3.0.0] - 2020-10-05
+* Support for buzz roll tremolos (@rettinghaus)
+* Support for `Sprechgesang` stems (@rettinghaus)
+* Support for `<phrase>`
+* Support (limited) for preserving XML comments in the MEI output
+* Support for `hairpin@opening` (@rettinghaus)
+* Support for `@dynam.dist` and `@harm.dist` (@rettinghaus)
+* Support for pedal lines (@rettinghaus)
+* Options for controlling output tabs (--output-indent and --output-indent-tab)
+* Option to remove ids in the MEI output (--remove-ids) to be passed to GetMEI with the JS toolkit
+* Fix tremolo tuplets (@rettinghaus)
+
+## [2.7.2] - 2020-07-23
+* Fix bug with memory in beams (@valeriyvan)
+
+## [2.7.1] - 2020-05-22
+* Fix bug with mensural clefs not displaying
+
+## [2.7.0] - 2020-05-13
+* Support for `@pname.ges` and `@pnum` in MIDI output (@rettinghaus)
+* Support for `@xml:space` in MusicXML import (@rettinghaus)
+* Support for `staffDef@lines.visible` (@rettinghaus)
+* Support for gliss (@rettinghaus)
+* Improved bTrem handling (@rettinghaus)
+* Improved trill support (@rettinghaus)
+* Option for using encoded line breaks, but automatic page breaks (--breaks=line) (@earboxer)
+* Support for `trill@extender` (@rettinghaus)
+* Support for `note@head.visible` (@rettinghaus)
 * Improved spacing with crossing voices (@rettinghaus)
 * Complete beam refactoring
 * Support for mSpace elements (@rettinghaus)
@@ -11,6 +41,7 @@
 ## [2.6.0] - 2020-03-11
 * Support for Plaine and Easie output (limited features)
 * Support for lyrics on chords (@rettinghaus)
+* Support for `scoreDef@system.leftline` (@rettinghaus)
 * Support for reh elements (@rettinghaus)
 * Improved extender lines in MusicXML import (@rettinghaus)
 * Improved backup handling in MusicXML import (@wergo)

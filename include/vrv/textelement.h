@@ -25,7 +25,7 @@ public:
      */
     ///@{
     TextElement();
-    TextElement(std::string classid);
+    TextElement(const std::string &classid);
     virtual ~TextElement();
     virtual void Reset();
     virtual std::string GetClassName() const { return "TextElement"; }
@@ -89,6 +89,7 @@ public:
         m_x = 0;
         m_y = 0;
         m_width = 0;
+        m_height = 0;
         m_laidOut = false;
         m_newLine = false;
         m_verticalShift = false;
@@ -100,6 +101,7 @@ public:
     int m_x;
     int m_y;
     int m_width;
+    int m_height;
     bool m_laidOut;
     bool m_newLine;
     bool m_verticalShift;

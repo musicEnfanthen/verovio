@@ -34,7 +34,7 @@ ControlElement::ControlElement() : FloatingObject("ce"), LinkingInterface(), Att
     Reset();
 }
 
-ControlElement::ControlElement(std::string classid)
+ControlElement::ControlElement(const std::string &classid)
     : FloatingObject(classid), LinkingInterface(), AttLabelled(), AttTyped()
 {
     RegisterInterface(LinkingInterface::GetAttClasses(), LinkingInterface::IsInterface());
@@ -68,10 +68,15 @@ data_HORIZONTALALIGNMENT ControlElement::GetChildRendAlignment()
 
 int ControlElement::AdjustXOverflow(FunctorParams *functorParams)
 {
-    AdjustXOverflowParams *params = dynamic_cast<AdjustXOverflowParams *>(functorParams);
+    AdjustXOverflowParams *params = vrv_params_cast<AdjustXOverflowParams *>(functorParams);
     assert(params);
 
     if (!this->Is({ DIR, DYNAM, TEMPO })) {
+        return FUNCTOR_SIBLINGS;
+    }
+
+    // Right aligned cannot overflow
+    if (this->GetChildRendAlignment() == HORIZONTALALIGNMENT_right) {
         return FUNCTOR_SIBLINGS;
     }
 

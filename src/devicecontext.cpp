@@ -195,14 +195,18 @@ void DeviceContext::AddGlyphToTextExtend(Glyph *glyph, TextExtend *extend)
     partialHeight = ceil(tmp / (double)glyph->GetUnitsPerEm());
     tmp = y * m_fontStack.top()->GetPointSize();
     y = ceil(tmp / (double)glyph->GetUnitsPerEm());
-    tmp = x * m_fontStack.top()->GetPointSize();
-    x = ceil(tmp / (double)glyph->GetUnitsPerEm());
+    // Following lines were commented out because result of these assignemens were not used (dead store)
+    // tmp = x * m_fontStack.top()->GetPointSize();
+    // x = ceil(tmp / (double)glyph->GetUnitsPerEm());
 
     advX = glyph->GetHorizAdvX();
     tmp = advX * m_fontStack.top()->GetPointSize();
     advX = ceil(tmp / (double)glyph->GetUnitsPerEm());
 
-    extend->m_width += std::max(partialWidth + x, advX);
+    // Changed because the width should only be the sum of advX
+    // Alternatively we could add what is below 0 for the first and what is beyond the advx for the last
+    // extend->m_width += std::max(partialWidth + x, advX);
+    extend->m_width += (advX == 0) ? partialWidth : advX;
     extend->m_height = std::max(partialHeight, extend->m_height);
     extend->m_ascent = std::max(partialHeight + y, extend->m_ascent);
     extend->m_descent = std::max(-y, extend->m_descent);
