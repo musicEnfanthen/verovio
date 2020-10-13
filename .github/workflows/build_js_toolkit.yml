@@ -36,6 +36,7 @@ jobs:
       - name: Set Environment Variable OUTPUT_PATH
         uses: allenevans/set-env@v1.0.0
         with:
+          overwrite: false
           OUTPUT_PATH: ${{ github.workspace }}/${{ env.GH_PAGES_PATH}}
 
       - name: Checkout main repo
@@ -86,9 +87,9 @@ jobs:
           make -j 8
 
           echo "Update the documentation of the option list"
-          echo "./verovio -? > $OUTPUT_PATH/_includes/cli.txt"
-          ./verovio -?; echo $?
-          ./verovio -? > $OUTPUT_PATH/_includes/cli.txt; echo $?
+          echo "./verovio -h > $OUTPUT_PATH/_includes/cli.txt"
+          ./verovio -h; echo $?
+          ./verovio -h > $OUTPUT_PATH/_includes/cli.txt; echo $?
 
       - name: Build Toolkit
         run: |
@@ -104,3 +105,7 @@ jobs:
           echo "Show content"
           ls -alh
           git status
+
+      - name: List all files
+        if: always()
+        run: ls -al
