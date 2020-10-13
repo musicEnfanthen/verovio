@@ -11,18 +11,17 @@ on:
 env:
   # repos
   VEROVIO_REPOSITORY: musicenfanthen/verovio  # TODO: switch back to "rism-ch/verovio"
-  EMSCRIPTEN_REPOSITORY: emscripten-core/emsdk
 
   # branches
   BUILD_BRANCH: travis-test   # TODO: switch back to "develop"
   GH_PAGES_BRANCH: gh-pages
 
   # directories
-  EMSCRIPTEN_PATH: emsdk
   GH_PAGES_PATH: gh-pages
 
-  # others
-  EMSCRIPTEN_VERSION: 1.39.6
+  # emscripten
+  EMSCRIPTEN_PATH: emsdk
+  EMSCRIPTEN_VERSION: latest
   EMSCRIPTEN_CACHE_FOLDER: 'emsdk-cache'
 
 
@@ -68,7 +67,7 @@ jobs:
           # path for cache
           path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
           # key for cache
-          key: ${{ env.EMSCRIPTEN_VERSION }}-${{ runner.os }}
+          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
 
       - name: Setup emsdk (use cache if found, create otherwise)
         uses: mymindstorm/setup-emsdk@v7
@@ -86,7 +85,8 @@ jobs:
           cmake ../cmake
           make -j 8
 
-          echo "Update the documentation of the option list"
+      -name: Update documentation of the option list
+        run: |
           echo "./verovio -h > $OUTPUT_PATH/_includes/cli.txt"
           ./verovio -h; echo $?
           ./verovio -h > $OUTPUT_PATH/_includes/cli.txt; echo $?
