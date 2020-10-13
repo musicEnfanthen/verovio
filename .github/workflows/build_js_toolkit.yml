@@ -88,6 +88,7 @@ jobs:
       - name: Update documentation of the option list
         run: |
           echo "./verovio -h > $OUTPUT_PATH/_includes/cli.txt"
+          cd $GITHUB_WORKSPACE/tools
           ./verovio -h; echo $?
           ./verovio -h > $OUTPUT_PATH/_includes/cli.txt; echo $?
 
