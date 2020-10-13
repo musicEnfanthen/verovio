@@ -14,47 +14,47 @@ jobs:
 
     name: Build ${{ matrix.config.os }}-${{ matrix.config.compiler }}-${{ matrix.config.version }}
     # This job runs on all the os specified in strategy.matrix.os
-    runs-on: ${{ matrix.config.os }}-latest
+    runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
         config:
-          - os: ubuntu
+          - os: ubuntu-20.04
             compiler: gcc
             version: "6"
 
-          - os: ubuntu
+          - os: ubuntu-20.04
             compiler: gcc
             version: "9"
 
-          - os: ubuntu
+          - os: ubuntu-20.04
             compiler: clang
             version: "6.0"
 
-          - os: ubuntu
+          - os: ubuntu-20.04
             compiler: clang
             version: "9"
 
-#          - os: windows
+#          - os: windows-latest
 #            compiler: cl
 #            version: "default"
 #
-#          - os: windows
+#          - os: windows-latest
 #            compiler: clang-cl
 #            version: "latest"
 #
-#          - os: windows
+#          - os: windows-latest
 #            compiler: clang
 #            version: "latest"
 #
-#          - os: windows
+#          - os: windows-latest
 #            compiler: gcc
 #            version: "latest"
 
-          - os: macos
+          - os: macos-latest
             compiler: xcode
             version: "default"
 
-          - os: macos
+          - os: macos-latest
             compiler: gcc
             version: "latest"
 
