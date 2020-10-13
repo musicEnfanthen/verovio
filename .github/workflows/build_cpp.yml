@@ -27,12 +27,20 @@ jobs:
             version: "9"
 
           - os: ubuntu-20.04
+            compiler: gcc
+            version: "10"
+
+          - os: ubuntu-20.04
             compiler: clang
             version: "6.0"
 
           - os: ubuntu-20.04
             compiler: clang
             version: "9"
+
+          - os: ubuntu-20.04
+            compiler: clang
+            version: "10"
 
 #          - os: windows-latest
 #            compiler: cl
