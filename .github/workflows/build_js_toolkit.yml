@@ -71,11 +71,17 @@ jobs:
       matrix:
         toolkit:
           - target: nohumdrum
-            options: -c -H -M
-            filepath: verovio-toolkit.js*
+            options: "-c -H -M"
+            filepath: "verovio-toolkit.js*"
           - target: light
-            options: -c -H -l -M
-            filepath: verovio-toolkit-light.js*
+            options: "-c -H -l -M"
+            filepath: "verovio-toolkit-light.js*"
+          - target: wasm
+            options: "-c -H -w -M"
+            filepath: "verovio*wasm*"
+          - target: default
+            options: "-c -M"
+            filepath: "*-hum.js*"
 
     steps:
       - name: Checkout main repo
