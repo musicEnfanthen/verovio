@@ -155,4 +155,5 @@ jobs:
 
       - name: Verify
         run: |
+          git status
           ls -R
