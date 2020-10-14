@@ -92,6 +92,12 @@ jobs:
           ./verovio -h; echo $?
           ./verovio -h > $OUTPUT_PATH/_includes/cli.txt; echo $?
 
+      - name: Upload cli artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: cli.txt
+          path: $OUTPUT_PATH/_includes/cli.txt
+
       - name: Build Toolkit
         run: |
           cd $GITHUB_WORKSPACE/emscripten
@@ -99,14 +105,26 @@ jobs:
           ./buildToolkit -c -H
           cp build/verovio-toolkit.js* $OUTPUT_PATH/javascript/develop/
 
+      - name: Upload js build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: verovio-toolkit.js
+          path: $GITHUB_WORKSPACE/emscripten/build/verovio-toolkit.js*
+
+
       - name: Verify
         run: |
           echo "Change to Output Directory"
           cd $OUTPUT_PATH/javascript/develop/
           echo "Show content"
+          pwd
           ls -alh
           git status
 
       - name: List all files
         if: always()
-        run: ls -al
+        run: |
+          cd $OUTPUT_PATH
+          pwd
+          ls -al
+          git status
