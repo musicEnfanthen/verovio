@@ -58,7 +58,7 @@ jobs:
       - name: Upload cli artifact
         uses: actions/upload-artifact@v2
         with:
-          name: cli.txt
+          name: cli-build
           path: ${{ github.workspace }}/temp/cli.txt
 
 
@@ -70,8 +70,12 @@ jobs:
     strategy:
       matrix:
         toolkit:
-          - option: -c -H -M
+          - target: nohumdrum
+            options: -c -H -M
             filepath: verovio-toolkit.js*
+          - target: light
+            options: -c -H -l -M
+            filepath: verovio-toolkit-light.js*
 
     steps:
       - name: Checkout main repo
@@ -92,6 +96,7 @@ jobs:
           version: ${{ env.EMSCRIPTEN_VERSION }}
           actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
 
+      #TODO: remove step
       - name: Verify emscripten build
         run: emcc -v
 
@@ -104,7 +109,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
-          ./buildToolkit ${{ matrix.toolkit.option }}
+          ./buildToolkit ${{ matrix.toolkit.options }}
           cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/temp/
           cd $GITHUB_WORKSPACE/temp/
           echo "Show content"
@@ -114,7 +119,7 @@ jobs:
       - name: Upload js build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: verovio-toolkit.js
+          name: toolkit-build
           path: ${{ github.workspace }}/temp/${{ matrix.toolkit.filepath }}
 
       - name: List all files
@@ -129,7 +134,7 @@ jobs:
     name: Deploy
     # This job runs on linux
     runs-on: ubuntu-latest
-    needs: build_js
+    needs: [build_cli, build_js]
     steps:
       - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
         uses: actions/checkout@v2
@@ -139,6 +144,14 @@ jobs:
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
+        #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
+        with:
+          path: artifacts
+
+      - name: Copy artifacts to gh-pages
+        run: |
+          cp artifacts/cli-build/cli.txt ${{ env.GH_PAGES_PATH }}/_includes/
+          cp artifacts/toolkit-build/* ${{ env.GH_PAGES_PATH }}/javascript/develop/
 
       - name: Verify
         run: |
