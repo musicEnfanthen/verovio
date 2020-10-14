@@ -32,37 +32,12 @@ jobs:
     # This job runs on linux
     runs-on: ubuntu-latest
     steps:
-      - name: Set Environment Variable OUTPUT_PATH
-        uses: allenevans/set-env@v1.0.0
-        with:
-          overwrite: false
-          OUTPUT_PATH: ${{ github.workspace }}/${{ env.GH_PAGES_PATH}}
-
       - name: Checkout main repo
         uses: actions/checkout@v2
 
-      - name: Cache output artifacts
-        id: cache-output-path
-        uses: actions/cache@v2
-        with:
-          # path for cache
-          path: ${{ env.OUTPUT_PATH }}
-          # key for cache
-          key: ${{ runner.os }}-output-${{ github.sha }}
-
-      - name: Verify
-        run: |
-          echo ${OUTPUT_PATH}
-
-      - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ env.GH_PAGES_BRANCH }}
-          path: ${{ env.GH_PAGES_PATH }}
-
       - name: Cache emsdk artifacts
-        uses: actions/cache@v2
         id: cache-emsdk
+        uses: actions/cache@v2
         with:
           # path for cache
           path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
@@ -75,9 +50,13 @@ jobs:
           version: ${{ env.EMSCRIPTEN_VERSION }}
           actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
 
-
-      - name: Verify
+      - name: Verify emscripten build
         run: emcc -v
+
+      - name: Create temp dir
+        run: |
+          - cd $GITHUB_WORKSPACE
+          - mkdir temp
 
       - name: Make build
         run: |
@@ -87,44 +66,61 @@ jobs:
 
       - name: Update documentation of the option list
         run: |
-          echo "./verovio -h > $OUTPUT_PATH/_includes/cli.txt"
           cd $GITHUB_WORKSPACE/tools
-          ./verovio -h; echo $?
-          ./verovio -h > $OUTPUT_PATH/_includes/cli.txt; echo $?
+          ./verovio -h > $GITHUB_WORKSPACE/temp/cli.txt
+          cd $GITHUB_WORKSPACE/temp/
+          echo "Show content"
+          pwd
+          ls -alh
 
       - name: Upload cli artifact
         uses: actions/upload-artifact@v2
         with:
-          name: cli.txt
-          path: $OUTPUT_PATH/_includes/cli.txt
+          name: verovio_build_artifacts
+          path: $GITHUB_WORKSPACE/temp/cli.txt
 
       - name: Build Toolkit
         run: |
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
           ./buildToolkit -c -H
-          cp build/verovio-toolkit.js* $OUTPUT_PATH/javascript/develop/
+          cp build/verovio-toolkit.js* $GITHUB_WORKSPACE/temp/
+          cd $GITHUB_WORKSPACE/temp/
+          echo "Show content"
+          pwd
+          ls -alh
 
       - name: Upload js build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: verovio-toolkit.js
-          path: $GITHUB_WORKSPACE/emscripten/build/verovio-toolkit.js*
-
-
-      - name: Verify
-        run: |
-          echo "Change to Output Directory"
-          cd $OUTPUT_PATH/javascript/develop/
-          echo "Show content"
-          pwd
-          ls -alh
-          git status
+          name: verovio_build_artifacts
+          path: $GITHUB_WORKSPACE/temp/verovio-toolkit.js*
 
       - name: List all files
         if: always()
         run: |
-          cd $OUTPUT_PATH
+          cd $GITHUB_WORKSPACE/temp/
           pwd
           ls -al
           git status
+
+  deploy:
+    name: Deploy
+    # This job runs on linux
+    runs-on: ubuntu-latest
+    needs: precache
+    steps:
+      - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.GH_PAGES_BRANCH }}
+          path: ${{ env.GH_PAGES_PATH }}
+
+      - name: Download js build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: verovio-build_artifacts
+
+      - name: Verify
+        run: |
+          ls -R
