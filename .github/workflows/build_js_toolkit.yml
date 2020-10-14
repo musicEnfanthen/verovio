@@ -66,6 +66,13 @@ jobs:
     name: Build JS toolkit
     # This job runs on linux
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        toolkit:
+          - option: -c -H -M
+            filepath: verovio-toolkit.js*
+
     steps:
       - name: Checkout main repo
         uses: actions/checkout@v2
@@ -97,8 +104,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
-          ./buildToolkit -c -H -M
-          cp build/verovio-toolkit.js* $GITHUB_WORKSPACE/temp/
+          ./buildToolkit ${{ matrix.toolkit.option }}
+          cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/temp/
           cd $GITHUB_WORKSPACE/temp/
           echo "Show content"
           pwd
@@ -108,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: verovio-toolkit.js
-          path: ${{ github.workspace }}/temp/verovio-toolkit.js*
+          path: ${{ github.workspace }}/temp/${{ matrix.toolkit.filepath }}
 
       - name: List all files
         if: always()
@@ -130,10 +137,8 @@ jobs:
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_PATH }}
 
-      - name: Download js build artifact
+      - name: Download build artifacts
         uses: actions/download-artifact@v2
-        with:
-          name: verovio-build-artifacts
 
       - name: Verify
         run: |
