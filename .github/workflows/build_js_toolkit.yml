@@ -17,10 +17,14 @@ env:
   GH_PAGES_BRANCH: gh-pages
 
   # directories
-  GH_PAGES_PATH: gh-pages
+  GH_PAGES_FOLDER: gh-pages
+  TEMP_FOLDER: temp
+
+  # build artifacts
+  CLI_BUILD: cli-build
+  TOOLKIT_BUILD: toolkit-build
 
   # emscripten
-  EMSCRIPTEN_PATH: emsdk
   EMSCRIPTEN_VERSION: latest
   EMSCRIPTEN_CACHE_FOLDER: 'emsdk-cache'
 
@@ -38,7 +42,7 @@ jobs:
       - name: Create temp dir
         run: |
           cd $GITHUB_WORKSPACE
-          mkdir -p temp/
+          mkdir -p ${{ env.TEMP_FOLDER }}/
 
       - name: Make build
         run: |
@@ -49,8 +53,8 @@ jobs:
       - name: Update documentation of the option list
         run: |
           cd $GITHUB_WORKSPACE/tools
-          ./verovio -h > $GITHUB_WORKSPACE/temp/cli.txt
-          cd $GITHUB_WORKSPACE/temp/
+          ./verovio -h > $GITHUB_WORKSPACE/${{ env.TEMP_FOLDER }}/cli.txt
+          cd $GITHUB_WORKSPACE/${{ env.TEMP_FOLDER }}/
           echo "Show content"
           pwd
           ls -alh
@@ -58,8 +62,8 @@ jobs:
       - name: Upload cli artifact
         uses: actions/upload-artifact@v2
         with:
-          name: cli-build
-          path: ${{ github.workspace }}/temp/cli.txt
+          name: ${{ env.CLI_BUILD }}
+          path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/cli.txt
 
 
   build_js:
@@ -71,15 +75,19 @@ jobs:
       matrix:
         toolkit:
           - target: nohumdrum
+            message: "Building toolkit without humdrum"
             options: "-c -H -M"
             filepath: "verovio-toolkit.js*"
           - target: light
+            message: "Building toolkit without humdrum as light version"
             options: "-c -H -l -M"
             filepath: "verovio-toolkit-light.js*"
           - target: wasm
+            message: "Building toolkit without humdrum as wasm"
             options: "-c -H -w -M"
             filepath: "verovio*wasm*"
           - target: default
+            message: "Building default toolkit (with humdrum)"
             options: "-c -M"
             filepath: "*-hum.js*"
 
@@ -92,7 +100,7 @@ jobs:
         uses: actions/cache@v2
         with:
           # path for cache
-          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
+          path: ${{ env.EMSCRIPTEN_CACHE_PATH }}
           # key for cache
           key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
 
@@ -100,7 +108,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v7
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
-          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
+          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_PATH }}
 
       #TODO: remove step
       - name: Verify emscripten build
@@ -109,29 +117,30 @@ jobs:
       - name: Create temp dir
         run: |
           cd $GITHUB_WORKSPACE
-          mkdir -p temp
+          mkdir -p ${{ env.TEMP_FOLDER }}/
 
-      - name: Build Toolkit
+      - name: Build Toolkit (${{ matrix.toolkit.target }}) with options ${{ matrix.toolkit.options }}
         run: |
           cd $GITHUB_WORKSPACE/emscripten
-          echo "Building toolkit without humdrum"
+          echo "${{ matrix.toolkit.message }}"
           ./buildToolkit ${{ matrix.toolkit.options }}
-          cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/temp/
-          cd $GITHUB_WORKSPACE/temp/
+          cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/${{ env.TEMP_FOLDER }}/
+
+          cd $GITHUB_WORKSPACE/${{ env.TEMP_FOLDER }}/
           echo "Show content"
           pwd
           ls -alh
 
-      - name: Upload js build artifact
+      - name: Upload js build artifact (${{ matrix.toolkit.target }})
         uses: actions/upload-artifact@v2
         with:
-          name: toolkit-build
-          path: ${{ github.workspace }}/temp/${{ matrix.toolkit.filepath }}
+          name: ${{ env.TOOLKIT_BUILD }}
+          path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/${{ matrix.toolkit.filepath }}
 
       - name: List all files
         if: always()
         run: |
-          cd $GITHUB_WORKSPACE/temp/
+          cd $GITHUB_WORKSPACE/${{ env.TEMP_FOLDER }}/
           pwd
           ls -al
           git status
@@ -156,8 +165,8 @@ jobs:
 
       - name: Copy artifacts to gh-pages
         run: |
-          cp artifacts/cli-build/cli.txt ${{ env.GH_PAGES_PATH }}/_includes/
-          cp artifacts/toolkit-build/* ${{ env.GH_PAGES_PATH }}/javascript/develop/
+          cp artifacts/${{ env.CLI_BUILD }}/cli.txt ${{ env.GH_PAGES_PATH }}/_includes/
+          cp artifacts/${{ env.TOOLKIT_BUILD }}/* ${{ env.GH_PAGES_PATH }}/javascript/develop/
 
       - name: Verify
         run: |
