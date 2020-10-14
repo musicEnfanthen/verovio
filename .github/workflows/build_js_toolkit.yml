@@ -27,8 +27,43 @@ env:
 
 jobs:
   # Precache the emscripten installation and make-build for the JS Toolkit Build
-  precache:
-    name: Precache
+  build_cli:
+    name: Build cli
+    # This job runs on linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v2
+
+      - name: Create temp dir
+        run: |
+          cd $GITHUB_WORKSPACE
+          mkdir -p temp/
+
+      - name: Make build
+        run: |
+          cd $GITHUB_WORKSPACE/tools
+          cmake ../cmake
+          make -j 8
+
+      - name: Update documentation of the option list
+        run: |
+          cd $GITHUB_WORKSPACE/tools
+          ./verovio -h > $GITHUB_WORKSPACE/temp/cli.txt
+          cd $GITHUB_WORKSPACE/temp/
+          echo "Show content"
+          pwd
+          ls -alh
+
+      - name: Upload cli artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: cli.txt
+          path: ${{ github.workspace }}/temp/cli.txt
+
+
+  build_js:
+    name: Build JS toolkit
     # This job runs on linux
     runs-on: ubuntu-latest
     steps:
@@ -58,32 +93,11 @@ jobs:
           cd $GITHUB_WORKSPACE
           mkdir -p temp
 
-      - name: Make build
-        run: |
-          cd $GITHUB_WORKSPACE/tools
-          cmake ../cmake
-          make -j 8
-
-      - name: Update documentation of the option list
-        run: |
-          cd $GITHUB_WORKSPACE/tools
-          ./verovio -h > $GITHUB_WORKSPACE/temp/cli.txt
-          cd $GITHUB_WORKSPACE/temp/
-          echo "Show content"
-          pwd
-          ls -alh
-
-      - name: Upload cli artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: verovio_build_artifacts
-          path: ${{ github.workspace }}/temp/cli.txt
-
       - name: Build Toolkit
         run: |
           cd $GITHUB_WORKSPACE/emscripten
           echo "Building toolkit without humdrum"
-          ./buildToolkit -c -H
+          ./buildToolkit -c -H -M
           cp build/verovio-toolkit.js* $GITHUB_WORKSPACE/temp/
           cd $GITHUB_WORKSPACE/temp/
           echo "Show content"
@@ -93,7 +107,7 @@ jobs:
       - name: Upload js build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: verovio_build_artifacts
+          name: verovio-toolkit.js
           path: ${{ github.workspace }}/temp/verovio-toolkit.js*
 
       - name: List all files
@@ -108,7 +122,7 @@ jobs:
     name: Deploy
     # This job runs on linux
     runs-on: ubuntu-latest
-    needs: precache
+    needs: build_js
     steps:
       - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
         uses: actions/checkout@v2
@@ -119,7 +133,7 @@ jobs:
       - name: Download js build artifact
         uses: actions/download-artifact@v2
         with:
-          name: verovio-build_artifacts
+          name: verovio-build-artifacts
 
       - name: Verify
         run: |
