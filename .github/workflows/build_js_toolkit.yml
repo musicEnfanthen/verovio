@@ -55,8 +55,8 @@ jobs:
 
       - name: Create temp dir
         run: |
-          - cd $GITHUB_WORKSPACE
-          - mkdir temp
+          cd $GITHUB_WORKSPACE
+          mkdir -p temp
 
       - name: Make build
         run: |
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: verovio_build_artifacts
-          path: $GITHUB_WORKSPACE/temp/cli.txt
+          path: ${{ GITHUB_WORKSPACE }}/temp/cli.txt
 
       - name: Build Toolkit
         run: |
@@ -94,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: verovio_build_artifacts
-          path: $GITHUB_WORKSPACE/temp/verovio-toolkit.js*
+          path: ${{ GITHUB_WORKSPACE }}/temp/verovio-toolkit.js*
 
       - name: List all files
         if: always()
