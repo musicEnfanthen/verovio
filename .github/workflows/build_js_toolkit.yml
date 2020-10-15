@@ -82,10 +82,10 @@ jobs:
             message: "Building toolkit without humdrum as light version"
             options: "-c -H -l -M"
             filepath: "verovio-toolkit-light.js*"
-          - target: wasm
-            message: "Building toolkit without humdrum as wasm"
-            options: "-c -H -w -M"
-            filepath: "verovio*wasm*"
+         # - target: wasm
+         #   message: "Building toolkit without humdrum as wasm"
+         #   options: "-c -H -w -M"
+         #   filepath: "verovio*wasm*"
           - target: default
             message: "Building default toolkit (with humdrum)"
             options: "-c -M"
