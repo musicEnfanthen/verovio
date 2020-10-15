@@ -1,16 +1,11 @@
 name: Verovio CI (build JS toolkit)
 
 on:
-  push:
-    # Trigger the workflow on push,
-    # but only for the branches specified
-    branches:
-      # Push events on develop branch
-      - develop
-      # Push events on ci-test branch (only needed for testing purposes)
-      - ci-test
-      # Push events on travis-test branch (only needed for testing purposes)
-      - travis-test
+  # Trigger the workflow when specified workflow is completed
+  workflow_run:
+    workflows: ['Verovio CI (build C++)'] # build C++ workflow runs on push to develop, ci-test or travis-test branch
+    types:
+      - completed
 
 # globals
 env:
@@ -45,7 +40,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           mkdir -p $TEMP_FOLDER/
 
-      - name: Make build
+      - name: Run make
         run: |
           cd $GITHUB_WORKSPACE/tools
           cmake ../cmake
