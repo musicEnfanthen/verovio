@@ -79,34 +79,34 @@ jobs:
     #####################
     # builds toolkit with different options in parallel
     # all "substages" have to use the same stage id ("build-toolkit")
-#    - stage: build-toolkit
-#      name: "no humdrum"
-#      os: linux
-#      script:
-#        - ./travis/ci_build-toolkit.sh nohumdrum
-#    - name: "no humdrum light"
-#      os: linux
-#      script:
-#        - ./travis/ci_build-toolkit.sh light
-#    - name: "no humdrum wasm"
-#      os: linux
-#      script:
-#        - ./travis/ci_build-toolkit.sh wasm
-#    - name: "default (with humdrum)"
-#      os: linux
-#      script:
-#        - travis_wait 30 ./travis/ci_build-toolkit.sh default
+    - stage: build-toolkit
+      name: "no humdrum"
+      os: linux
+      script:
+        - ./travis/ci_build-toolkit.sh nohumdrum
+    - name: "no humdrum light"
+      os: linux
+      script:
+        - ./travis/ci_build-toolkit.sh light
+    - name: "no humdrum wasm"
+      os: linux
+      script:
+        - ./travis/ci_build-toolkit.sh wasm
+    - name: "default (with humdrum)"
+      os: linux
+      script:
+        - travis_wait 30 ./travis/ci_build-toolkit.sh default
 
     ##############
     # DEPLOY stage
     ##############
     # deploys toolkit and doxygen builds in parallel
-#    - stage: deploy
-#      name: toolkit
-#      os: linux
-#      skip_cleanup: true
-#      script:
-#        - ./travis/ci_deploy-toolkit.sh
+    - stage: deploy
+      name: toolkit
+      os: linux
+      skip_cleanup: true
+      script:
+        - ./travis/ci_deploy-toolkit.sh
 #    - name: doxygen
 #      os: linux
 #      addons:
