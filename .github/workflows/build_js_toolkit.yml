@@ -100,7 +100,7 @@ jobs:
         uses: actions/cache@v2
         with:
           # path for cache
-          path: ${{ env.EMSCRIPTEN_CACHE_PATH }}
+          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
           # key for cache
           key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}
 
@@ -108,7 +108,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v7
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
-          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_PATH }}
+          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}
 
       #TODO: remove step
       - name: Verify emscripten build
