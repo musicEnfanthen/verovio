@@ -57,11 +57,11 @@ jobs:
           path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/cli.txt
 
       - name: Check files
-          if: always()
-          run: |
-            cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
-            pwd
-            ls -al
+        if: always()
+        run: |
+          cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
+          pwd
+          ls -al
 
   build_js:
     name: Build JS toolkit
