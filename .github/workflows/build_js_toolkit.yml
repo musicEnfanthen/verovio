@@ -45,15 +45,10 @@ jobs:
           cmake ../cmake
           make -j 8
 
-      - name: Update documentation of the option list
+      - name: Update cli.txt
         run: |
           cd $GITHUB_WORKSPACE/tools
           ./verovio -h > $GITHUB_WORKSPACE/$TEMP_FOLDER/cli.txt
-
-          cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
-          echo "Show content"
-          pwd
-          ls -alh
 
       - name: Upload cli artifact
         uses: actions/upload-artifact@v2
@@ -61,6 +56,12 @@ jobs:
           name: ${{ env.CLI_BUILD }}
           path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/cli.txt
 
+      - name: Check files
+          if: always()
+          run: |
+            cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
+            pwd
+            ls -al
 
   build_js:
     name: Build JS toolkit
@@ -121,24 +122,18 @@ jobs:
           ./buildToolkit ${{ matrix.toolkit.options }}
           cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/$TEMP_FOLDER/
 
-          cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
-          echo "Show content"
-          pwd
-          ls -alh
-
       - name: Upload js build artifact (${{ matrix.toolkit.target }})
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TOOLKIT_BUILD }}
           path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/${{ matrix.toolkit.filepath }}
 
-      - name: List all files
+      - name: Check files
         if: always()
         run: |
           cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
           pwd
           ls -al
-          git status
 
   deploy:
     name: Deploy
@@ -163,11 +158,27 @@ jobs:
           cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
           cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
 
-      - name: Verify
+      - name: Check git status
         run: |
-          ls -R
-
-      - name: Git status
-        run: |
+          echo ${{ github.repository }}
           cd $GH_PAGES_FOLDER
           git status
+
+      - name: Push to gh-pages
+        run: |
+          echo "Configuring git push"
+          git config user.name "GH actions toolkit builder"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+          echo "Running git commit"
+          git add .
+          git commit -m "Auto-commit of toolkit build for rism-ch/verovio@${{ github.sha }}"
+
+          echo "Running git status"
+          git status
+
+          # Push all changes in one commit to the gh-pages branch
+          echo "Build branch ready to go. Pushing to Github..."
+          #git push origin ${GH_PAGES_BRANCH}
+
+          echo "🎉 New version deployed 🎊"
