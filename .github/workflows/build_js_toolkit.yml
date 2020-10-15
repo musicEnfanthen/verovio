@@ -151,11 +151,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_cli, build_js]
     steps:
-      - name: Checkout GH_PAGES_BRANCH into GH_PAGES_PATH
+      - name: Checkout GH_PAGES_BRANCH into GGH_PAGES_FOLDER
         uses: actions/checkout@v2
         with:
           ref: ${{ env.GH_PAGES_BRANCH }}
-          path: ${{ env.GH_PAGES_PATH }}
+          path: ${{ env.GH_PAGES_FOLDER }}
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
@@ -165,8 +165,8 @@ jobs:
 
       - name: Copy artifacts to gh-pages
         run: |
-          cp artifacts/${{ env.CLI_BUILD }}/cli.txt ${{ env.GH_PAGES_PATH }}/_includes/
-          cp artifacts/${{ env.TOOLKIT_BUILD }}/* ${{ env.GH_PAGES_PATH }}/javascript/develop/
+          cp artifacts/${{ env.CLI_BUILD }}/cli.txt ${{ env.GH_PAGES_FOLDER }}/_includes/
+          cp artifacts/${{ env.TOOLKIT_BUILD }}/* ${{ env.GH_PAGES_FOLDER }}/javascript/develop/
 
       - name: Verify
         run: |
