@@ -1,18 +1,19 @@
 name: Verovio CI (build JS toolkit)
 
 on:
-  # Trigger the workflow on push,
-  # but only for the travis-test branch
   push:
+    # Trigger the workflow on push,
+    # but only for the branches specified
     branches:
-      - travis-test   # TODO: switch back to "develop"
+      # Push events on develop branch
+      - develop
+      # Push events on ci-test branch (only needed for testing purposes)
+      - ci-test
+      # Push events on travis-test branch (only needed for testing purposes)
+      - travis-test
 
 # globals
 env:
-  # build artifacts
-  CLI_BUILD: cli-build
-  TOOLKIT_BUILD: toolkit-build
-
   # emscripten
   EMSCRIPTEN_VERSION: latest
   EMSCRIPTEN_CACHE_FOLDER: emsdk-cache
@@ -21,14 +22,20 @@ env:
   GH_PAGES_BRANCH: gh-pages
   GH_PAGES_FOLDER: gh-pages
 
+  # build artifacts
+  CLI_BUILD: cli-build
+  TOOLKIT_BUILD: toolkit-build
+
   # temp
   TEMP_FOLDER: temp
 
+
 jobs:
+  # Build the CLI artifacts
   build_cli:
     name: Build cli
-    # This job runs on linux
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout main repo
         uses: actions/checkout@v2
@@ -62,11 +69,12 @@ jobs:
           pwd
           ls -al
 
+  # Build the JS toolkit artifacts
   build_js:
     name: Build JS toolkit
-    # This job runs on linux
     runs-on: ubuntu-latest
 
+    # set matrix with toolkit options (runs the following steps for every target in parallel)
     strategy:
       matrix:
         toolkit:
@@ -134,10 +142,11 @@ jobs:
           pwd
           ls -al
 
+  # Deploy the build artifacts to gh-pages
   deploy:
     name: Deploy
-    # This job runs on linux
     runs-on: ubuntu-latest
+    # run deployment only after finishing the build jobs
     needs: [build_cli, build_js]
 
     steps:
@@ -149,11 +158,11 @@ jobs:
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
-        #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
         with:
+          #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
           path: artifacts
 
-      - name: Copy artifacts to GH_PAGES_FOLDER
+      - name: Copy artifacts to gh-pages
         run: |
           cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
           cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
@@ -181,6 +190,6 @@ jobs:
 
           # Push all changes in one commit to the gh-pages branch
           echo "Build branch ready to go. Pushing to Github..."
-          #git push origin ${GH_PAGES_BRANCH}
+          git push origin ${GH_PAGES_BRANCH}
 
           echo "🎉 New version deployed 🎊"
