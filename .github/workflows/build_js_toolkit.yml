@@ -170,5 +170,9 @@ jobs:
 
       - name: Verify
         run: |
-          git status
           ls -R
+
+      - name: Git status
+        run: |
+          cd ${{ env.GH_PAGES_FOLDER }}
+          git status
