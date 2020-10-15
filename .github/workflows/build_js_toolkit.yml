@@ -25,7 +25,6 @@ env:
   TEMP_FOLDER: temp
 
 jobs:
-  # Precache the emscripten installation and make-build for the JS Toolkit Build
   build_cli:
     name: Build cli
     # This job runs on linux
@@ -140,6 +139,7 @@ jobs:
     # This job runs on linux
     runs-on: ubuntu-latest
     needs: [build_cli, build_js]
+
     steps:
       - name: Checkout GH_PAGES_BRANCH into GH_PAGES_FOLDER
         uses: actions/checkout@v2
@@ -166,6 +166,8 @@ jobs:
 
       - name: Push to gh-pages
         run: |
+          cd $GH_PAGES_FOLDER
+
           echo "Configuring git push"
           git config user.name "GH actions toolkit builder"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
