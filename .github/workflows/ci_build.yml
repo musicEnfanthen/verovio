@@ -230,7 +230,7 @@ jobs:
   build_js:
     name: Build JS toolkit
     runs-on: ubuntu-20.04
-    needs: [setup_emscripten]
+    #needs: [setup_emscripten]
 
     # set matrix with toolkit options (runs the following steps for every target in parallel)
     strategy:
@@ -307,7 +307,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-20.04
     # run deployment only after finishing the build jobs
-    needs: [build_cli, build_js]
+    # needs: [build_cli, build_js]
+    needs: [build_js]
 
     steps:
       - name: Checkout GH_PAGES_REPO into GH_PAGES_FOLDER
