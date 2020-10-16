@@ -329,7 +329,7 @@ jobs:
           # cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_DIR/javascript/develop/
 
           echo hello > cli.txt
-          cp cli.txt $GH_PAGES_FOLDER/_includes/
+          cp cli.txt $GH_PAGES_DIR/_includes/
 
       - name: Check git status before commit
         run: |
