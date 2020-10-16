@@ -247,7 +247,7 @@ jobs:
           - target: wasm
             message: "Building toolkit without humdrum as wasm"
             options: "-c -H -w -M"
-#            filepath: "verovio*wasm*"
+            filepath: "verovio*wasm*"
 #          - target: default
 #            message: "Building default toolkit (with humdrum)"
 #            options: "-c -M"
