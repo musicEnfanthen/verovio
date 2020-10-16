@@ -319,7 +319,7 @@ jobs:
           repository: ${{ env.GH_PAGES_REPO }}
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_FOLDER }}
-          token: ${{ secret.GH_ACTIONS_TOKEN }}
+          token: ${{ secrets.GH_ACTIONS_TOKEN }}
 
 #      - name: Download build artifacts
 #        uses: actions/download-artifact@v2
