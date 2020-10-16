@@ -19,7 +19,7 @@ env:
   EMSCRIPTEN_CACHE_FOLDER: emsdk-cache
 
   # gh-pages
-  GH_PAGES_REPO: rism-ch/verovio.org
+  GH_PAGES_REPO: musicEnfanthen/verovio.org
   GH_PAGES_BRANCH: gh-pages
   GH_PAGES_FOLDER: gh-pages
 
