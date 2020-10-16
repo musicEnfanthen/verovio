@@ -366,7 +366,11 @@ jobs:
           echo "Build branch ready to go. Pushing to Github..."
 
           # gh-pages_repo="https://${{ secrets.GITHUB_TOKEN }}@github.com/$GH_PAGES_REPO.git"
-          # echo $gh-pages_repo
+
+          echo $REMOTE_REPO
+
+          git remote -v show
+          git remote show origin
 
           git push $REMOTE_REPO HEAD:$GH_PAGES_BRANCH
 
