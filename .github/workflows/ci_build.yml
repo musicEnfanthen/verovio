@@ -319,6 +319,7 @@ jobs:
           repository: ${{ env.GH_PAGES_REPO }}
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_FOLDER }}
+          persist-credentials: false
 
 #      - name: Download build artifacts
 #        uses: actions/download-artifact@v2
@@ -359,8 +360,7 @@ jobs:
       - name: Push changes to gh-pages
         # uses: ad-m/github-push-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GHP_REPO: https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
+          GHP_REPO: https://${{ GITHUB_ACTOR }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
         run: |
           cd $GH_PAGES_FOLDER
 
