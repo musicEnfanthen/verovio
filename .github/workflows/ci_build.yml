@@ -333,7 +333,7 @@ jobs:
           # cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
 
           echo hello > cli.txt
-          [ -f cli.txt ] && { echo "File exists."; cp cli.txt $GH_PAGES_FOLDER/_includes/ } || echo "File does not exist."
+          [ -f cli.txt ] && { echo "File exists."; cp cli.txt $GH_PAGES_FOLDER/_includes/; } || echo "File does not exist."
 
 
       - name: Check git status before commit
