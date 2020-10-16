@@ -332,7 +332,7 @@ jobs:
           # cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
           # cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
 
-          echo hallo > cli.txt
+          echo hello > cli.txt
           cp cli.txt $GH_PAGES_FOLDER/_includes/
 
 
