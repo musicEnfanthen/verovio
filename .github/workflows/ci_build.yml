@@ -361,16 +361,15 @@ jobs:
         # uses: ad-m/github-push-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHP_REPO: https://${{ GITHUB_TOKEN }}@github.com/${{ GH_PAGES_REPO }}.git
         run: |
           cd $GH_PAGES_FOLDER
-
-          ghp-repo="https://$GITHUB_TOKEN@github.com/$GH_PAGES_REPO.git"
 
           git remote -v show
           git remote show origin
 
           # Push all changes in one commit to the gh-pages branch
           echo "Build branch ready to go. Pushing to Github..."
-          git push $ghp-repo HEAD:$GH_PAGES_BRANCH
+          git push $GHP_REPO HEAD:$GH_PAGES_BRANCH
 
           echo "🎉 New version deployed 🎊"
