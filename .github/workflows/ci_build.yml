@@ -346,9 +346,9 @@ jobs:
         run: |
           cd $GH_PAGES_FOLDER
 
-          echo "Configuring git push"
-          git config user.name "GH actions toolkit builder"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          echo "Configuring git"
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
 
           echo "Running git commit"
           git add .
@@ -360,21 +360,17 @@ jobs:
       - name: Push changes to gh-pages
         # uses: ad-m/github-push-action@master
         env:
-          REMOTE_REPO: https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-
-          # Push all changes in one commit to the gh-pages branch
-          echo "Build branch ready to go. Pushing to Github..."
-
           cd $GH_PAGES_FOLDER
 
-          # gh-pages_repo="https://${{ secrets.GITHUB_TOKEN }}@github.com/$GH_PAGES_REPO.git"
-
-          echo $REMOTE_REPO
+          ghp-repo="https://$GITHUB_TOKEN@github.com/$GH_PAGES_REPO.git"
 
           git remote -v show
           git remote show origin
 
-          git push $REMOTE_REPO HEAD:$GH_PAGES_BRANCH
+          # Push all changes in one commit to the gh-pages branch
+          echo "Build branch ready to go. Pushing to Github..."
+          git push $ghp-repo HEAD:$GH_PAGES_BRANCH
 
           echo "🎉 New version deployed 🎊"
