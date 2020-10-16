@@ -358,7 +358,6 @@ jobs:
           git status
 
       - name: Push changes to gh-pages
-        # uses: ad-m/github-push-action@master
 #        env:
 #          GHP_REPO: https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
         run: |
