@@ -319,7 +319,7 @@ jobs:
           repository: ${{ env.GH_PAGES_REPO }}
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_FOLDER }}
-          persist-credentials: false
+          token: ${{ secret.GH_ACTIONS_TOKEN }}
 
 #      - name: Download build artifacts
 #        uses: actions/download-artifact@v2
@@ -359,8 +359,8 @@ jobs:
 
       - name: Push changes to gh-pages
         # uses: ad-m/github-push-action@master
-        env:
-          GHP_REPO: https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
+#        env:
+#          GHP_REPO: https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
         run: |
           cd $GH_PAGES_FOLDER
 
@@ -370,6 +370,6 @@ jobs:
           # Push all changes in one commit to the gh-pages branch
           echo "Build branch ready to go. Pushing to Github..."
 
-          git push -v --dry-run "$GHP_REPO" HEAD:$GH_PAGES_BRANCH
+          git push -v --dry-run origin HEAD:$GH_PAGES_BRANCH
 
           echo "🎉 New version deployed 🎊"
