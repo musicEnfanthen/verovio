@@ -316,11 +316,11 @@ jobs:
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_DIR }}
 
-#      - name: Download build artifacts
-#        uses: actions/download-artifact@v2
-#        with:
-#          #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
-#          path: artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
+          path: artifacts
 
       - name: Copy artifacts to gh-pages
         run: |
