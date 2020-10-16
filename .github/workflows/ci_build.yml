@@ -198,110 +198,110 @@ jobs:
   #####################################
   # Set up and cache emscripten build #
   #####################################
-  setup_emscripten:
-    name: Set up and cache emscripten
-    runs-on: ubuntu-20.04
-    # needs: [build_cpp]
-
-    steps:
-      # Cache system libraries generated during build time
-      - name: Set up cache
-        uses: actions/cache@v2
-        with:
-          # path for cache
-          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
-          # key for cache
-          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}-${{ github.run_id }}
-
-      # Cache emsdk
-      - name: Set up emsdk
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: ${{ env.EMSCRIPTEN_VERSION }}
-          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
-
-      - name: Verify emscripten build
-        run: emcc -v
+#  setup_emscripten:
+#    name: Set up and cache emscripten
+#    runs-on: ubuntu-20.04
+#    # needs: [build_cpp]
+#
+#    steps:
+#      # Cache system libraries generated during build time
+#      - name: Set up cache
+#        uses: actions/cache@v2
+#        with:
+#          # path for cache
+#          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
+#          # key for cache
+#          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}-${{ github.run_id }}
+#
+#      # Cache emsdk
+#      - name: Set up emsdk
+#        uses: mymindstorm/setup-emsdk@v7
+#        with:
+#          version: ${{ env.EMSCRIPTEN_VERSION }}
+#          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
+#
+#      - name: Verify emscripten build
+#        run: emcc -v
 
 
   ##################################
   # Build the JS toolkit artifacts #
   ##################################
-  build_js:
-    name: Build JS toolkit
-    runs-on: ubuntu-20.04
-    needs: [setup_emscripten]
-
-    # set matrix with toolkit options (runs the following steps for every target in parallel)
-    strategy:
-      matrix:
-        toolkit:
-#          - target: nohumdrum
-#            message: "Building toolkit without humdrum"
-#            options: "-c -H -M"
-#            filepath: "verovio-toolkit.js*"
-#          - target: light
-#            message: "Building toolkit without humdrum as light version"
-#            options: "-c -H -l -M"
-#            filepath: "verovio-toolkit-light.js*"
-          - target: wasm
-            message: "Building toolkit without humdrum as wasm"
-            options: "-c -H -w -M"
-            filepath: "verovio*wasm*"
-#          - target: default
-#            message: "Building default toolkit (with humdrum)"
-#            options: "-c -M"
-#            filepath: "*-hum.js*"
-
-    steps:
-      - name: Checkout main repo
-        uses: actions/checkout@v2
-
-      # Restore system libraries generated during build time from cache
-      - name: Restore system libraries from cache
-        uses: actions/cache@v2
-        with:
-          # path for cache
-          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
-          # key for cache
-          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}-${{ github.run_id }}
-
-      - name: Get emscripten build from cache and activate
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: ${{ env.EMSCRIPTEN_VERSION }}
-          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
-
-      - name: Verify emscripten build
-        run: emcc -v
-
-      - name: Create temp dir
-        run: |
-          cd $GITHUB_WORKSPACE
-          mkdir -p $TEMP_FOLDER//
-
-      - name: Build Toolkit (${{ matrix.toolkit.target }}) with options ${{ matrix.toolkit.options }}
-        run: |
-          cd $GITHUB_WORKSPACE/emscripten
-          echo "${{ matrix.toolkit.message }}"
-          ./buildToolkit ${{ matrix.toolkit.options }}
-          if [ -f build/${{ matrix.toolkit.filepath }} ]; then
-              echo "build/${{ matrix.toolkit.filepath }} exists."
-          fi
-          cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/$TEMP_FOLDER/
-
-      - name: Upload js build artifact (${{ matrix.toolkit.target }})
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.TOOLKIT_BUILD }}
-          path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/${{ matrix.toolkit.filepath }}
-
-      - name: Check files
-        if: always()
-        run: |
-          cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
-          pwd
-          ls -al
+#  build_js:
+#    name: Build JS toolkit
+#    runs-on: ubuntu-20.04
+#    needs: [setup_emscripten]
+#
+#    # set matrix with toolkit options (runs the following steps for every target in parallel)
+#    strategy:
+#      matrix:
+#        toolkit:
+##          - target: nohumdrum
+##            message: "Building toolkit without humdrum"
+##            options: "-c -H -M"
+##            filepath: "verovio-toolkit.js*"
+##          - target: light
+##            message: "Building toolkit without humdrum as light version"
+##            options: "-c -H -l -M"
+##            filepath: "verovio-toolkit-light.js*"
+#          - target: wasm
+#            message: "Building toolkit without humdrum as wasm"
+#            options: "-c -H -w -M"
+#            filepath: "verovio*wasm*"
+##          - target: default
+##            message: "Building default toolkit (with humdrum)"
+##            options: "-c -M"
+##            filepath: "*-hum.js*"
+#
+#    steps:
+#      - name: Checkout main repo
+#        uses: actions/checkout@v2
+#
+#      # Restore system libraries generated during build time from cache
+#      - name: Restore system libraries from cache
+#        uses: actions/cache@v2
+#        with:
+#          # path for cache
+#          path: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
+#          # key for cache
+#          key: ${{ runner.os }}-emsdk-${{ env.EMSCRIPTEN_VERSION }}-${{ github.run_id }}
+#
+#      - name: Get emscripten build from cache and activate
+#        uses: mymindstorm/setup-emsdk@v7
+#        with:
+#          version: ${{ env.EMSCRIPTEN_VERSION }}
+#          actions-cache-folder: ${{ env.EMSCRIPTEN_CACHE_FOLDER }}-${{ github.run_id }}
+#
+#      - name: Verify emscripten build
+#        run: emcc -v
+#
+#      - name: Create temp dir
+#        run: |
+#          cd $GITHUB_WORKSPACE
+#          mkdir -p $TEMP_FOLDER//
+#
+#      - name: Build Toolkit (${{ matrix.toolkit.target }}) with options ${{ matrix.toolkit.options }}
+#        run: |
+#          cd $GITHUB_WORKSPACE/emscripten
+#          echo "${{ matrix.toolkit.message }}"
+#          ./buildToolkit ${{ matrix.toolkit.options }}
+#          if [ -f build/${{ matrix.toolkit.filepath }} ]; then
+#              echo "build/${{ matrix.toolkit.filepath }} exists."
+#          fi
+#          cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/$TEMP_FOLDER/
+#
+#      - name: Upload js build artifact (${{ matrix.toolkit.target }})
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ${{ env.TOOLKIT_BUILD }}
+#          path: ${{ github.workspace }}/${{ env.TEMP_FOLDER }}/${{ matrix.toolkit.filepath }}
+#
+#      - name: Check files
+#        if: always()
+#        run: |
+#          cd $GITHUB_WORKSPACE/$TEMP_FOLDER/
+#          pwd
+#          ls -al
 
   ##########################################
   # Deploy the build artifacts to gh-pages #
@@ -311,27 +311,30 @@ jobs:
     runs-on: ubuntu-20.04
     # run deployment only after finishing the build jobs
     # needs: [build_cli, build_js]
-    needs: [build_js]
 
     steps:
       - name: Checkout GH_PAGES_REPO into GH_PAGES_FOLDER
         uses: actions/checkout@v2
         with:
           repository: ${{ env.GH_PAGES_REPO }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ env.GH_PAGES_BRANCH }}
           path: ${{ env.GH_PAGES_FOLDER }}
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
-          path: artifacts
+#      - name: Download build artifacts
+#        uses: actions/download-artifact@v2
+#        with:
+#          #if no name specified, all artifacts are downloaded (here: [cli-build, toolkit-build])
+#          path: artifacts
 
       - name: Copy artifacts to gh-pages
         run: |
           # cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
-          cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
+          # cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
+
+          echo hello > cli.txt
+          cp cli.txt $GH_PAGES_FOLDER/_includes/
+
 
       - name: Check git status
         run: |
@@ -356,13 +359,15 @@ jobs:
 
       - name: Push changes to gh-pages
         # uses: ad-m/github-push-action@master
+        env:
+          REMOTE_REPO: https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.GH_PAGES_REPO }}.git
         run: |
           # Push all changes in one commit to the gh-pages branch
           echo "Build branch ready to go. Pushing to Github..."
 
-          gh-pages_repo="https://${{ secrets.GITHUB_TOKEN }}@github.com/$GH_PAGES_REPO.git"
+          # gh-pages_repo="https://${{ secrets.GITHUB_TOKEN }}@github.com/$GH_PAGES_REPO.git"
           # echo $gh-pages_repo
 
-          git push "$gh-pages_repo" HEAD:$GH_PAGES_BRANCH
+          git push $REMOTE_REPO HEAD:$GH_PAGES_BRANCH
 
           echo "🎉 New version deployed 🎊"
