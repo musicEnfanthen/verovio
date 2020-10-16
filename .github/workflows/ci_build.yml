@@ -285,6 +285,9 @@ jobs:
           cd $GITHUB_WORKSPACE/emscripten
           echo "${{ matrix.toolkit.message }}"
           ./buildToolkit ${{ matrix.toolkit.options }}
+          if [ -f build/${{ matrix.toolkit.filepath }} ]; then
+              echo "build/${{ matrix.toolkit.filepath }} exists."
+          fi
           cp build/${{ matrix.toolkit.filepath }} $GITHUB_WORKSPACE/$TEMP_FOLDER/
 
       - name: Upload js build artifact (${{ matrix.toolkit.target }})
@@ -327,7 +330,7 @@ jobs:
 
       - name: Copy artifacts to gh-pages
         run: |
-          cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
+          # cp artifacts/$CLI_BUILD/cli.txt $GH_PAGES_FOLDER/_includes/
           cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
 
       - name: Check git status
