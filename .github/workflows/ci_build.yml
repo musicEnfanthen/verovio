@@ -96,7 +96,7 @@ jobs:
 #
 #      # Installation step for Ubuntu
 #      - name: Install Ubuntu (${{ matrix.config.compiler }}-${{ matrix.config.version }})
-#        if: matrix.config.os == 'Linux'
+#        if: runner.os == 'Linux'
 #        run: |
 #          # TODO: Remove once https://github.com/actions/virtual-environments/issues/1536 is resolved.
 #          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
@@ -116,7 +116,7 @@ jobs:
 #
 #      # Installation step for MacOS
 #      - name: Install macOS (${{ matrix.config.compiler }}-${{ matrix.config.version }})
-#        if: matrix.config.os == 'macOS'
+#        if: runner.os == 'macOS'
 #        run: |
 #          brew install ninja llvm
 #          sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
@@ -130,7 +130,7 @@ jobs:
 #
 #      # Installation step for Windows
 #      - name: Install Windows (${{ matrix.config.compiler }}-${{ matrix.config.version }})
-#        if: matrix.config.os == 'windows'
+#        if: runner.os == 'windows'
 #        run: |
 #          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 #          scoop install ninja llvm --global
@@ -333,7 +333,7 @@ jobs:
           # cp artifacts/$TOOLKIT_BUILD/* $GH_PAGES_FOLDER/javascript/develop/
 
           echo hello > cli.txt
-          [ -f cli.txt ] && {{ echo "File exists."; cp cli.txt $GH_PAGES_FOLDER/_includes/ } || echo "File does not exist."
+          [ -f cli.txt ] && { echo "File exists."; cp cli.txt $GH_PAGES_FOLDER/_includes/ } || echo "File does not exist."
 
 
       - name: Check git status before commit
