@@ -201,7 +201,7 @@ jobs:
   setup_emscripten:
     name: Set up and cache emscripten
     runs-on: ubuntu-20.04
-    needs: [build_cpp]
+    # needs: [build_cpp]
 
     steps:
       # Cache system libraries generated during build time
@@ -230,7 +230,7 @@ jobs:
   build_js:
     name: Build JS toolkit
     runs-on: ubuntu-20.04
-    #needs: [setup_emscripten]
+    needs: [setup_emscripten]
 
     # set matrix with toolkit options (runs the following steps for every target in parallel)
     strategy:
