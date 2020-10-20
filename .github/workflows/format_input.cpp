@@ -1,3 +1,5 @@
+// adapted from https://gist.github.com/gelldur/d7bc3ea226aebcf8cc879df1e8524236
+
 #include "a.h"
 
 #include <algorithm>

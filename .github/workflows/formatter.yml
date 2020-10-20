@@ -10,17 +10,21 @@ on:
 
 jobs:
   lint:
-    name: clang-format Code Formatter
+    name: Run clang-format
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Checkout main repo
+      - name: Check out main repo
         uses: actions/checkout@v2
 
       - name: Download clang-format
         # make sure to use version 5.0
         run: |
         #   brew install clang-format
+
+      - name: Verify clang-format installation
+        ruin: |
+          clang-format -help
 
       # Run clang-format on dummy files
       - name: Running clang-format
