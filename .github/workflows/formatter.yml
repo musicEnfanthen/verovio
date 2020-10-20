@@ -34,5 +34,9 @@ jobs:
           # clang-format -i -style=file src/*.cpp
 
           # clang-format -i -style=file include/vrv/*.h
+
+          pwd
+          ls -al
+
           clang-format -i -style=file .github/workflows/format-input.cpp
 
