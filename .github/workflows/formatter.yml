@@ -14,13 +14,21 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v2
+
       - name: Download clang-format
         # make sure to use version 5.0
         run: |
         #   brew install clang-format
 
+      # Run clang-format on dummy files
       - name: Running clang-format
+        working-directory: ${{ github.workspace }}
         run: |
           # clang-format -i -style=file include/vrv/*.h
           # clang-format -i -style=file src/*.cpp
+
+          # clang-format -i -style=file include/vrv/*.h
+          clang-format -i -style=file .github/workflows/format-input.cpp
 
