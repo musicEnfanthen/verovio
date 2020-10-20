@@ -11,14 +11,9 @@ on:
 jobs:
   lint:
     name: clang-format Code Formatter
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-#      - name: Clang Code Formatter
-#        uses: cvra/clang-format-action@clang9
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Download clang-format
         # make sure to use version 5.0
         run: |
@@ -26,5 +21,6 @@ jobs:
 
       - name: Running clang-format
         run: |
-        # clang-format -style=file -i   some-directory/some-file.cpp
+          # clang-format -i -style=file include/vrv/*.h
+          # clang-format -i -style=file src/*.cpp
 
