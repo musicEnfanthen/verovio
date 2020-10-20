@@ -23,7 +23,7 @@ jobs:
         #   brew install clang-format
 
       - name: Verify clang-format installation
-        ruin: |
+        run: |
           clang-format -help
 
       # Run clang-format on dummy files
