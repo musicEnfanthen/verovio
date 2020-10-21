@@ -39,7 +39,7 @@ jobs:
           pwd
           ls -R .github
 
-          clang-format --verbose -style=file .github/workflows/format_input.cpp
+          clang-format -i --verbose -style=file .github/workflows/format_input.cpp
 
       - name: Upload format artifact
         uses: actions/upload-artifact@v2
