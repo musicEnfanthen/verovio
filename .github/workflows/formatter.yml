@@ -44,5 +44,5 @@ jobs:
       - name: Upload format artifact
         uses: actions/upload-artifact@v2
         with:
-          # name: clang-format output
+          name: clang-format output
           path: .github/workflows/format_input.cpp
