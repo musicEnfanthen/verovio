@@ -3,7 +3,7 @@ name: Python Wheel Build
 on:
   push:
     # Trigger the workflow on push, but only for the develop-pypi and master branch
-    branches: [develop-pypi, master]
+    branches: [develop-pypi, master, swig-test]
 
 # globals
 env:
