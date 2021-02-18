@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cibuildwheel==1.7.1 twine
+          python -m pip install twine
 
       #===============================================#
       # Prepare identifier
@@ -74,29 +74,23 @@ jobs:
           # Remove dot from python-version for CIBW and prefix with cp
           id=cp$(echo ${{ matrix.python-version }} | sed -e 's/\.//g')-${{ matrix.platform_id }}
           echo CIBW_BUILD_IDENTIFIER=$id >> $GITHUB_ENV
-
-      # TODO: Can be removed when everything is set up
-      - name: Check CIBW_BUILD_IDENTIFIER
-        shell: bash
-        run: echo ${{ env.CIBW_BUILD_IDENTIFIER }}
-
-      # TODO: Can be removed when everything is set up
-      - name: Get Build Identifiers provided by cibuildwheel for ${{ matrix.os }}-${{ matrix.architecture }}
-        run: python -m cibuildwheel --print-build-identifiers
+          echo $id
 
       #===============================================#
       # wheels
       - name: Build wheels
-        env:
-          CIBW_SKIP: cp27-* # manylinux2014 not compatible with python 2.7
-          CIBW_BUILD: ${{ env.CIBW_BUILD_IDENTIFIER }}
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-          CIBW_MANYLINUX_I686_IMAGE: manylinux2014
-          # CIBW_BEFORE_ALL_LINUX: yum install swig -y
-          CIBW_BEFORE_ALL_MACOS: brew update && brew install swig
-          CIBW_BEFORE_ALL_WINDOWS: choco install swig -f -y
-          CIBW_BEFORE_BUILD: swig -version && bash -c 'cd tools; ./get_git_commit.sh' && swig -c++ -python ./bindings/python/verovio.i
-        run: python -m cibuildwheel --output-dir wheelhouse
+        uses: joerick/cibuildwheel@v1.9.0
+        with:
+          env:
+            CIBW_SKIP: cp27-* # manylinux2014 not compatible with python 2.7
+            CIBW_BUILD: ${{ env.CIBW_BUILD_IDENTIFIER }}
+            CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+            CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+            # CIBW_BEFORE_ALL_LINUX: yum install swig -y
+            CIBW_BEFORE_ALL_MACOS: brew update && brew install swig
+            CIBW_BEFORE_ALL_WINDOWS: choco install swig -f -y
+            CIBW_BEFORE_BUILD: swig -version && bash -c 'cd tools; ./get_git_commit.sh' && swig -c++ -python ./bindings/python/verovio.i
+          output-dir: wheelhouse
 
       #===============================================#
       # Check build
