@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       # Build the wheels for Linux, Windows and macOS for Python 3.9
       matrix:
-        os: [ macos-latest, windows-latest, ubuntu-18.04]
+        os: [ macos-latest, windows-latest, ubuntu-20.04]
         python-version: [3.6, 3.7, 3.8, 3.9]
         architecture: [ x86, x64 ]
         include:
@@ -37,13 +37,13 @@ jobs:
           - os: windows-latest
             architecture: x86
             platform_id: win32
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             architecture: x64
             platform_id: manylinux_x86_64
         exclude:
           - os: macos-latest
             architecture: x86
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             architecture: x86
 
     steps:
@@ -137,7 +137,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
         python-version: [3.9]
 
     steps:
@@ -219,7 +219,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
         python-version: [3.9]
         architecture: [ x64 ]
 
