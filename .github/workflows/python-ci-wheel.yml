@@ -85,6 +85,7 @@ jobs:
         env:
           CIBW_SKIP: cp27-* # manylinux2014 not compatible with python 2.7
           CIBW_BUILD: ${{ env.CIBW_BUILD_IDENTIFIER }}
+          # TODO: change back to "manylinux2014" when cibuildwheel releases new version
           CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:2021-02-17-8d1372a
           CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux2014_i686:2021-02-17-8d1372a
           # CIBW_BEFORE_ALL_LINUX: yum install swig -y
